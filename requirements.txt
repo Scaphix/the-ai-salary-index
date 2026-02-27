@@ -4,7 +4,6 @@ matplotlib
 seaborn
 ydata-profiling # can be removed from requirements before deployment
 plotly
-ppscore # can be removed from requirements before deployment
 kaggle
 streamlit
 feature-engine
