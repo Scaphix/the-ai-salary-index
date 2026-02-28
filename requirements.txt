@@ -12,3 +12,4 @@ scikit-learn
 xgboost
 yellowbrick # can be removed from requirements before deployment
 Pillow # can be removed from requirements before deployment
+nbformat
