@@ -1,3 +1,4 @@
+setuptools==69.5.1
 numpy
 pandas
 matplotlib
@@ -13,3 +14,4 @@ xgboost
 yellowbrick # can be removed from requirements before deployment
 Pillow # can be removed from requirements before deployment
 nbformat
+ipywidgets
