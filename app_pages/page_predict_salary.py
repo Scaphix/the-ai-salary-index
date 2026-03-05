@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
-import joblib
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from src.data_management import load_pkl_file
+from src.machine_learning.predictive_analysis import predict_salary
 
 
 def page_predict_salary_body():
@@ -16,8 +17,10 @@ def page_predict_salary_body():
     version = "v1"
     path = f"outputs/ml_pipeline/predict_salary/{version}"
 
-    pipeline_dc_fe = joblib.load(f"{path}/pipeline_data_cleaning_feat_eng.pkl")
-    pipeline_model = joblib.load(f"{path}/pipeline_regressor.pkl")
+    pipeline_dc_fe = load_pkl_file(
+        f"{path}/pipeline_data_cleaning_feat_eng.pkl"
+    )
+    pipeline_model = load_pkl_file(f"{path}/pipeline_regressor.pkl")
 
     st.write("---")
     st.write("### Model Performance")
@@ -89,18 +92,4 @@ def page_predict_salary_body():
             "employee_residence": [employee_residence],
         })
 
-        # Encode using the same logic as the pipeline
-        ordinal_map = pipeline_dc_fe.named_steps["OrdinalEncoder"].mappings
-        freq_enc = pipeline_dc_fe.named_steps["FrequencyEncoder"]
-
-        for col, mapping in ordinal_map.items():
-            if col in live_data.columns:
-                live_data[col] = live_data[col].map(mapping)
-
-        for col in freq_enc.variables:
-            if col in live_data.columns:
-                live_data[col] = live_data[col].map(freq_enc.freq_map_[col]).fillna(0)
-
-        prediction = pipeline_model.predict(live_data)
-        salary = prediction[0]
-        st.success(f"Predicted Salary: **${salary:,.0f}** USD")
+        predict_salary(live_data, pipeline_dc_fe, pipeline_model)

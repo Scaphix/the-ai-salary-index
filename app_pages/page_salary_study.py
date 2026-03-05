@@ -1,10 +1,10 @@
 from feature_engine.discretisation import ArbitraryDiscretiser
 import streamlit as st
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import plotly.express as px
+from src.data_management import load_data
 
 sns.set_style("whitegrid")
 
@@ -102,8 +102,3 @@ def page_salary_study_body():
     st.plotly_chart(fig, use_container_width=True)
 
 
-@st.cache_data
-def load_data():
-    return pd.read_csv(
-        "outputs/datasets/collection/ai_job_dataset1.csv"
-    )
