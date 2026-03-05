@@ -8,7 +8,7 @@ from app_pages.page_project_hypothesis import page_project_hypothesis_body
 
 st.set_page_config(
     page_title="The AI Salary Index",
-    page_icon="🖥️",
+    page_icon="📈",
 )
 
 pages = st.navigation([
