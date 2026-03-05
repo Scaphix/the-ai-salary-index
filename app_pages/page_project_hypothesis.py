@@ -109,8 +109,20 @@ def page_project_hypothesis_body():
         "markets."
     )
     st.write(
-        "**Validation:** Analyze mean salary by job_category. "
-        "Perform Kruskal-Wallis test for differences across "
-        "categories."
+        "**Validation:** Engineered `job_category` by grouping "
+        "20 job titles into 6 broad categories. "
+        "Kruskal-Wallis test for differences across categories."
     )
-   
+    st.error(
+        "**Verdict: Rejected**\n\n"
+        "* `job_category` was engineered by grouping 20 job "
+        "titles into 6 broad categories: Data Science, Data "
+        "Engineering, ML Engineering, Research, AI/Specialized "
+        "Engineering, and Leadership & Management.\n"
+        "* Kruskal-Wallis test: H = 8.94, **p = 0.112** "
+        "(not significant at α = 0.05).\n"
+        "* Median salaries are remarkably similar across all "
+        "categories (~$105k–$113k).\n\n"
+        "Job category does not significantly influence salary "
+        "and should not be a key predictor in the model."
+    )
