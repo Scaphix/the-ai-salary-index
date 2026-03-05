@@ -1,7 +1,12 @@
+from feature_engine.discretisation import ArbitraryDiscretiser
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
+import plotly.express as px
+
+sns.set_style("whitegrid")
 
 
 def page_salary_study_body():
@@ -66,6 +71,35 @@ def page_salary_study_body():
     ax.set_title("Salary by Education Required")
     plt.xticks(rotation=45)
     st.pyplot(fig)
+
+
+    st.write("---")
+    st.write("### Parallel Categories: Salary x Experience x Remote x Company Size")
+
+    salary_map = [-np.inf, 60000, 100000, 140000, np.inf]
+    disc = ArbitraryDiscretiser(binning_dict={'salary_usd': salary_map})
+
+    df_parallel = disc.fit_transform(
+        df[['salary_usd', 'experience_level', 'remote_ratio', 'company_size']].copy()
+    )
+
+    # numeric column used for coloring
+    df_parallel['salary_band'] = df_parallel['salary_usd']
+
+    # readable labels for display
+    labels_map = {0: '<$60k', 1: '$60k-$100k', 2: '$100k-$140k', 3: '>$140k'}
+    df_parallel['salary_usd'] = df_parallel['salary_usd'].replace(labels_map)
+
+    fig = px.parallel_categories(
+        df_parallel,
+        dimensions=['salary_usd', 'experience_level', 'remote_ratio', 'company_size'],
+        color='salary_band',
+        width=950,
+        height=500,
+        title="Parallel Categories: Salary x Experience x Remote x Company Size"
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
 
 
 @st.cache_data
