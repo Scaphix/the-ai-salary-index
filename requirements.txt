@@ -5,18 +5,10 @@ matplotlib==3.10.8
 seaborn==0.13.2
 scipy==1.17.1
 joblib==1.5.3
-ydata-profiling # can be removed from requirements before deployment
 plotly==6.5.2
-kaggle==2.0.0
 streamlit==1.54.0
 feature-engine==1.9.3
 imbalanced-learn
 scikit-learn==1.8.0
 xgboost==3.2.0
-yellowbrick==1.5 # can be removed from requirements before deployment
-umap-learn
-hdbscan
-kmodes
-Pillow==12.1.1 # can be removed from requirements before deployment
-nbformat==5.10.4
-ipywidgets
+Pillow==12.1.1
