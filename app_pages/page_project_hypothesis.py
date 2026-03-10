@@ -47,7 +47,8 @@ def page_project_hypothesis_body():
     )
     st.write(
         "**Recommended action:** Compensation benchmarking tools should use "
-        "experience level as the primary stratification variable before comparing across "
+        "experience level as the primary stratification "
+        "variable before comparing across "
         "job titles or locations."
     )
 
@@ -85,8 +86,7 @@ def page_project_hypothesis_body():
         "* All salary bands flow evenly across on-site (0), "
         "hybrid (50), and fully remote (100) categories.\n"
         "* Median salary (~$110k) and interquartile range are "
-        "nearly identical across all three work arrangements.\n"
-        "* Spearman correlation is near-zero (0.003).\n\n"
+        "nearly identical across all three work arrangements.\n\n"
         "Work arrangement should not be included as a key "
         "feature in the regression model."
     )
@@ -119,7 +119,7 @@ def page_project_hypothesis_body():
     st.success(
         "**Verdict: Confirmed**\n\n"
         "* `years_experience` is positively correlated with "
-        "`salary_usd` (Pearson: ~0.7).\n"
+        "`salary_usd`.\n"
         "* This makes it the strongest purely numerical "
         "predictor in the dataset."
     )
@@ -131,7 +131,10 @@ def page_project_hypothesis_body():
         sns.regplot(data=df, x='years_experience', y='salary_usd',
                     scatter_kws={'alpha': 0.3, 's': 10},
                     line_kws={'color': 'red'}, ax=ax)
-        ax.set_title(f'Salary vs Years of Experience (Pearson r = {r_pearson:.3f})')
+        ax.set_title(
+            f'Salary vs Years of Experience '
+            f'(Pearson r = {r_pearson:.3f})'
+        )
         ax.set_xlabel('Years of Experience')
         ax.set_ylabel('Salary (USD)')
         plt.tight_layout()
@@ -155,10 +158,11 @@ def page_project_hypothesis_body():
     )
     st.success(
         "**Verdict: Confirmed**\n\n"
-        "* Kruskal-Wallis test: H = 544.67, **p ≈ 0** "
-        "(highly significant at α = 0.05).\n"
-        "* Large companies pay notably higher salaries than "
-        "small and medium-sized companies.\n\n"
+        "* Median salary by company size: **S = $95k**, "
+        "**M = $105k**, **L = $122k** : a $27k gap between "
+        "small and large companies.\n"
+        "* Company size is a secondary predictor after "
+        "experience level and years of experience.\n\n"
         "Company size is a relevant feature for the regression "
         "model."
     )
@@ -175,18 +179,19 @@ def page_project_hypothesis_body():
     st.write("---")
     st.write("## Conclusion")
     st.info(
-        "Three out of four hypotheses were confirmed, showing "
-        "the following:\n\n"
-        "**Domain intuition is supported:** Patterns expected "
-        "from recruitment experience — that seniority, years of "
-        "experience, and company size drive salary — are "
-        "validated by statistical evidence.\n\n"
-        "**Features are predictive:** `experience_level`, "
-        "`years_experience`, and `company_size` show strong "
-        "links to `salary_usd`, making them valuable inputs "
-        "for the salary prediction model.\n\n"
-        "**One assumption disproved:** Remote work arrangement "
-        "does not influence salary, meaning recruiters should "
-        "not adjust salary expectations based on whether a role "
-        "is on-site, hybrid, or fully remote."
+        "Three out of four hypotheses were confirmed:\n\n"
+        "* **Experience level** (H1) and **years of experience** "
+        "(H3) are the strongest salary predictors, confirming that "
+        "seniority (both in title and tenure) is the dominant "
+        "driver of AI compensation.\n"
+        "* **Company size** (H4) is a secondary but statistically "
+        "significant factor, with large companies paying up to "
+        "$27k more than small ones.\n"
+        "* **Remote ratio** (H2) was rejected : work arrangement "
+        "has no meaningful impact on salary, suggesting that the "
+        "AI job market has largely normalized remote pay.\n\n"
+        "**Implication for modeling:** The regression model should "
+        "prioritize `experience_level`, `years_experience`, and "
+        "`company_size` as core features, while `remote_ratio` "
+        "can be safely excluded or deprioritized."
     )
