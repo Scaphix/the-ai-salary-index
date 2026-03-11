@@ -28,6 +28,7 @@ pages = st.navigation([
     st.Page(page_salary_study_body, title="AI Salary Study"),
     st.Page(page_project_hypothesis_body, title="Project Hypothesis"),
     st.Page(page_predict_salary_body, title="Predict Salary"),
+    st.page(page_cluster, title="Cluster Analysis"),
 ])
 
 pages.run()
