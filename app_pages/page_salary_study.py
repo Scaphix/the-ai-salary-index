@@ -10,12 +10,12 @@ sns.set_style("whitegrid")
 
 
 def page_salary_study_body():
-    st.write("### AI Salary Study")
+    st.write("# AI Salary Study")
 
     st.info(
-        "**BR1** - The client wants to understand how AI salaries "
-        "correlate with job attributes such as experience level, "
-        "company size, location, and education."
+        "**Business Requirement 1** - The client wants to understand"
+        "how AI salaries correlate with job attributes such as "
+        "experience level, company size, location, and education."
     )
 
     df = load_data()
@@ -27,60 +27,160 @@ def page_salary_study_body():
         )
         st.write(df.head(10))
 
+    # --- KPI Metrics ---
     st.write("---")
-    st.write("### Salary Distribution")
-    fig, ax = plt.subplots(figsize=(10, 5))
-    sns.histplot(data=df, x="salary_usd", bins=40, kde=True, ax=ax)
-    ax.set_xlabel("Salary (USD)")
-    ax.set_title("Distribution of AI Salaries")
-    st.pyplot(fig)
+    col1, col2, col3, col4 = st.columns(4)
+    col1.metric("Total Jobs", f"{df.shape[0]:,}")
+    col2.metric("Median Salary", f"${df['salary_usd'].median():,.0f}")
+    col3.metric("Top Country",
+                df['company_location'].value_counts().idxmax())
+    col4.metric("Most Common Level",
+                df['experience_level'].value_counts().idxmax())
 
+    # --- Salary Distribution ---
     st.write("---")
-    st.write("### Salary by Experience Level")
-    fig, ax = plt.subplots(figsize=(10, 5))
-    order = ["EN", "MI", "SE", "EX"]
-    labels = {"EN": "Entry", "MI": "Mid", "SE": "Senior", "EX": "Executive"}
-    plot_df = df.copy()
-    plot_df["experience_label"] = plot_df["experience_level"].map(labels)
-    label_order = [labels[o] for o in order if o in labels]
-    sns.boxplot(data=plot_df, x="experience_label", y="salary_usd",
-                order=label_order, ax=ax)
-    ax.set_xlabel("Experience Level")
-    ax.set_ylabel("Salary (USD)")
-    ax.set_title("Salary by Experience Level")
-    st.pyplot(fig)
+    st.write("## Salary Distribution")
+    st.info("The salary distribution is right-skewed, "
+            "with most salaries concentrated between $50k and $150k "
+            "and a long tail extending beyond $400k. "
+            "The median salary (~$110k) is lower than the mean, "
+            "reflecting a small number of high-paying executive roles "
+            "that pull the average upward. For benchmarking purposes, "
+            "the median is a more reliable measure of a typical AI salary.")
+    if st.checkbox("Show Distribution of AI Salaries"):
+        fig, ax = plt.subplots(figsize=(8, 3))
+        sns.histplot(data=df, x="salary_usd", bins=40, kde=True, ax=ax)
+        ax.set_xlabel("Salary (USD)")
+        ax.set_title("Distribution of AI Salaries")
+        st.pyplot(fig, use_container_width=False)
 
+    # --- Salary by Location ---
     st.write("---")
-    st.write("### Salary by Company Size")
-    fig, ax = plt.subplots(figsize=(10, 5))
-    size_labels = {"S": "Small", "M": "Medium", "L": "Large"}
-    plot_df["size_label"] = plot_df["company_size"].map(size_labels)
-    sns.boxplot(data=plot_df, x="size_label", y="salary_usd",
-                order=["Small", "Medium", "Large"], ax=ax)
-    ax.set_xlabel("Company Size")
-    ax.set_ylabel("Salary (USD)")
-    ax.set_title("Salary by Company Size")
-    st.pyplot(fig)
+    st.write("## Salary by Location")
+    st.info(
+        "Location plays a visible role in AI compensation. "
+        "The charts below show the top 12 countries by median "
+        "salary for both company headquarters and employee residence."
+    )
 
+    loc_left, loc_right = st.columns(2)
+    with loc_left:
+        st.write("#### By Company Location")
+        top_comp = (df.groupby('company_location')['salary_usd']
+                    .median().sort_values(ascending=False).head(12))
+        fig, ax = plt.subplots(figsize=(5, 3.5))
+        top_comp.plot.barh(ax=ax, color='steelblue')
+        ax.set_xlabel('Median Salary (USD)')
+        ax.set_ylabel('')
+        ax.invert_yaxis()
+        plt.tight_layout()
+        st.pyplot(fig, use_container_width=False)
+
+    with loc_right:
+        st.write("#### By Employee Residence")
+        top_res = (df.groupby('employee_residence')['salary_usd']
+                   .median().sort_values(ascending=False).head(12))
+        fig, ax = plt.subplots(figsize=(5, 3.5))
+        top_res.plot.barh(ax=ax, color='darkorange')
+        ax.set_xlabel('Median Salary (USD)')
+        ax.set_ylabel('')
+        ax.invert_yaxis()
+        plt.tight_layout()
+        st.pyplot(fig, use_container_width=False)
+
+    # --- Correlation Study ---
     st.write("---")
-    st.write("### Salary by Education Required")
-    fig, ax = plt.subplots(figsize=(10, 5))
-    sns.boxplot(data=df, x="education_required", y="salary_usd", ax=ax)
-    ax.set_xlabel("Education Required")
-    ax.set_ylabel("Salary (USD)")
-    ax.set_title("Salary by Education Required")
-    plt.xticks(rotation=45)
-    st.pyplot(fig)
+    st.write("## Correlation Study")
+    st.info(
+        "A combination of **Pearson** (for numerical features) and "
+        "**Spearman** (for categorical features) correlation analyses "
+        "was used to identify which job attributes are most strongly "
+        "associated with salary. The key features that emerged are:"
+    )
 
+    st.write(
+        "* **Experience Level** — strongest categorical predictor\n"
+        "* **Years of Experience** — strongest numerical predictor\n"
+        "* **Company Size** — secondary but significant predictor\n"
+        "* **Remote Ratio** — no meaningful correlation with salary"
+    )
 
+    tab_yrs, tab_exp, tab_size, tab_remote = st.tabs([
+        "Years of Experience", "Experience Level",
+        "Company Size", "Remote Ratio"
+    ])
+
+    with tab_yrs:
+        from scipy import stats
+        r_pearson, _ = stats.pearsonr(
+            df['years_experience'], df['salary_usd']
+        )
+        fig, ax = plt.subplots(figsize=(8, 3.5))
+        sns.regplot(data=df, x='years_experience', y='salary_usd',
+                    scatter_kws={'alpha': 0.3, 's': 10},
+                    line_kws={'color': 'red'}, ax=ax)
+        ax.set_title(
+            f'Salary vs Years of Experience '
+            f'(Pearson r = {r_pearson:.3f})'
+        )
+        ax.set_xlabel('Years of Experience')
+        ax.set_ylabel('Salary (USD)')
+        plt.tight_layout()
+        st.pyplot(fig, use_container_width=False)
+
+    with tab_exp:
+        fig, ax = plt.subplots(figsize=(8, 3.5))
+        exp_order = ["EN", "MI", "SE", "EX"]
+        exp_labels = {
+            "EN": "Entry", "MI": "Mid",
+            "SE": "Senior", "EX": "Executive"
+        }
+        corr_df = df.copy()
+        corr_df["experience_label"] = corr_df["experience_level"].map(
+            exp_labels
+        )
+        sns.boxplot(data=corr_df, x="experience_label", y="salary_usd",
+                    order=[exp_labels[o] for o in exp_order], ax=ax)
+        ax.set_xlabel("Experience Level")
+        ax.set_ylabel("Salary (USD)")
+        ax.set_title("Salary by Experience Level")
+        plt.tight_layout()
+        st.pyplot(fig, use_container_width=False)
+
+    with tab_size:
+        fig, ax = plt.subplots(figsize=(8, 3.5))
+        corr_size_labels = {"S": "Small", "M": "Medium", "L": "Large"}
+        corr_df = df.copy()
+        corr_df["size_label"] = corr_df["company_size"].map(corr_size_labels)
+        sns.boxplot(data=corr_df, x="size_label", y="salary_usd",
+                    order=["Small", "Medium", "Large"], ax=ax)
+        ax.set_xlabel("Company Size")
+        ax.set_ylabel("Salary (USD)")
+        ax.set_title("Salary by Company Size")
+        plt.tight_layout()
+        st.pyplot(fig, use_container_width=False)
+
+    with tab_remote:
+        fig, ax = plt.subplots(figsize=(8, 3.5))
+        sns.boxplot(data=df, x='remote_ratio', y='salary_usd',
+                    order=[0, 50, 100], ax=ax)
+        ax.set_title('Salary by Remote Ratio')
+        ax.set_xlabel('Remote Ratio (0=On-site, 50=Hybrid, 100=Remote)')
+        ax.set_ylabel('Salary (USD)')
+        plt.tight_layout()
+        st.pyplot(fig, use_container_width=False)
+
+    # --- Parallel Categories ---
     st.write("---")
-    st.write("### Parallel Categories: Salary x Experience x Remote x Company Size")
+    st.write("## Parallel Categories:"
+            " Salary x Experience x Remote x Company Size")
 
     salary_map = [-np.inf, 60000, 100000, 140000, np.inf]
     disc = ArbitraryDiscretiser(binning_dict={'salary_usd': salary_map})
 
     df_parallel = disc.fit_transform(
-        df[['salary_usd', 'experience_level', 'remote_ratio', 'company_size']].copy()
+        df[['salary_usd', 'experience_level', 'remote_ratio',
+            'company_size']].copy()
     )
 
     # numeric column used for coloring
@@ -92,13 +192,40 @@ def page_salary_study_body():
 
     fig = px.parallel_categories(
         df_parallel,
-        dimensions=['salary_usd', 'experience_level', 'remote_ratio', 'company_size'],
+        dimensions=['salary_usd', 'experience_level', 'remote_ratio', 
+                    'company_size'],
         color='salary_band',
+        color_continuous_scale=[
+            [0, '#2166ac'],
+            [0.33, '#67a9cf'],
+            [0.66, '#ef8a62'],
+            [1, '#b2182b'],
+        ],
         width=950,
         height=500,
         title="Parallel Categories: Salary x Experience x Remote x Company Size"
     )
+    fig.update_coloraxes(
+        colorbar_title_text="Salary Band",
+        colorbar_tickvals=[0, 1, 2, 3],
+        colorbar_ticktext=['<$60k', '$60k-$100k', '$100k-$140k', '>$140k'],
+    )
 
     st.plotly_chart(fig, use_container_width=True)
 
-
+    st.info(
+        "**How to read this plot:** Each vertical axis represents a "
+        "feature (salary band, experience level, remote ratio, company "
+        "size). The coloured ribbons connect the categories that each "
+        "row in the dataset belongs to, making it easy to spot patterns "
+        "at a glance.\n\n"
+        "**Key takeaways:**\n"
+        "* Senior (SE) and Executive (EX) roles are heavily concentrated "
+        "in the higher salary bands (>$140k), while Entry-level (EN) "
+        "roles cluster in the lower bands.\n"
+        "* Remote ratio ribbons spread fairly evenly across all salary "
+        "bands, confirming that work arrangement does not drive salary.\n"
+        "* Large (L) companies contribute more to the higher salary "
+        "bands than small (S) companies, consistent with the "
+        "correlation findings above."
+    )
