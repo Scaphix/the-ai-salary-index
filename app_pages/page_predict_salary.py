@@ -10,6 +10,12 @@ def page_predict_salary_body():
     st.info(
         "**Business Requirement 1** — The client wants to predict the expected "
         "annual salary (USD) for a given AI job posting based on its attributes.\n\n"
+        "**Business Requirement 2** — Classify whether a given position is "
+        "**fairly compensated**, **overpaid**, or **underpaid** relative to "
+        "market expectations.\n\n"
+        "We combine salary prediction with residual-based market segmentation "
+        "to not only estimate what a role should pay, but also provide "
+        "actionable context on salary positioning.\n\n"
         "**Success criterion:** R² ≥ 0.70 on both train and test sets."
     )
 
@@ -154,30 +160,29 @@ def _render_salary_insights(salary, experience_level, company_size):
 
     # Salary tier classification
     if salary >= 200_000:
-        tier = "top-tier"
         tier_detail = (
-            "This places the role in the **top salary tier** for AI positions. "
-            "Roles at this level are typically executive or highly specialised "
-            "positions in major tech hubs."
+            "This places the role in the **top salary tier** "
+            "for AI positions. Roles at this level are typically "
+            "executive or highly specialised positions in major "
+            "tech hubs."
         )
     elif salary >= 140_000:
-        tier = "upper-mid"
         tier_detail = (
-            "This is an **above-average salary** for AI roles. It reflects "
-            "a senior-level position or a mid-level role in a high-paying market."
+            "This is an **above-average salary** for AI roles. "
+            "It reflects a senior-level position or a mid-level "
+            "role in a high-paying market."
         )
     elif salary >= 90_000:
-        tier = "mid-range"
         tier_detail = (
-            "This falls in the **mid-range** for AI salaries. It is typical "
-            "for mid-level professionals or senior roles in lower-cost markets."
+            "This falls in the **mid-range** for AI salaries. "
+            "It is typical for mid-level professionals or senior "
+            "roles in lower-cost markets."
         )
     else:
-        tier = "entry"
         tier_detail = (
-            "This is on the **lower end** of AI salaries. It is common for "
-            "entry-level roles, smaller companies, or markets with a lower "
-            "cost of living."
+            "This is on the **lower end** of AI salaries. It is "
+            "common for entry-level roles, smaller companies, or "
+            "markets with a lower cost of living."
         )
 
     st.info(
@@ -185,28 +190,76 @@ def _render_salary_insights(salary, experience_level, company_size):
         f"{tier_detail}"
     )
 
+    # --- Market Segment Context (BR2) ---
+    st.write("### Market Positioning")
+
+    mae = 16_124
+    fair_low = salary - mae
+    fair_high = salary + mae
+
+    st.success(
+        f"Based on your profile, the expected **fair market "
+        f"salary** is **${salary:,.0f}**. This is what the model "
+        f"considers appropriate given your experience level, "
+        f"location, and company size.\n\n"
+        f"People with similar profiles tend to fall into one of "
+        f"three market segments:"
+    )
+
+    col_f, col_o, col_u = st.columns(3)
+    with col_f:
+        st.metric("Fair", f"${fair_low:,.0f}–${fair_high:,.0f}")
+        st.caption(
+            "Salary within ±$16k of the prediction. "
+            "Compensation aligns with market expectations."
+        )
+    with col_o:
+        st.metric("Overpaid", f"> ${fair_high:,.0f}")
+        st.caption(
+            "Salary significantly above prediction. May "
+            "reflect niche skills, strong negotiation, "
+            "or equity compensation."
+        )
+    with col_u:
+        st.metric("Underpaid", f"< ${fair_low:,.0f}")
+        st.caption(
+            "Salary below market expectation. May signal "
+            "retention risk or room for negotiation."
+        )
+
+    st.info(
+        "**How to use this:** If you receive an offer for this "
+        "type of role, compare it against the predicted salary. "
+        "An offer within the **Fair** range is market-aligned. "
+        "Offers outside that range may warrant further "
+        "investigation or negotiation."
+    )
+
     # Actionable advice
     tips = []
     if experience_level in ("EN", "MI"):
         tips.append(
-            "Moving from entry/mid-level to senior typically results in "
-            "a significant salary jump — experience level is the strongest "
-            "predictor in the model."
+            "Moving from entry/mid-level to senior typically "
+            "results in a significant salary jump — experience "
+            "level is the strongest predictor in the model."
         )
     if company_size == "S":
         tips.append(
-            "Larger companies tend to offer higher compensation. Consider "
-            "targeting medium or large organisations for better pay."
+            "Larger companies tend to offer higher compensation."
+            " Consider targeting medium or large organisations "
+            "for better pay."
         )
     if experience_level == "EX":
         tips.append(
-            "Executive-level roles command premium salaries. Location choice "
-            "becomes the key differentiator at this level."
+            "Executive-level roles command premium salaries. "
+            "Location choice becomes the key differentiator "
+            "at this level."
         )
 
     tips.append(
-        "Company and employee location strongly influence salary. "
-        "Roles based in the US, Switzerland, or Norway tend to pay the most."
+        "Company and employee location strongly influence "
+        "salary. Roles based in the US, Switzerland, or "
+        "Norway tend to pay the most."
     )
 
     st.write("**Key Takeaways**")
@@ -214,8 +267,9 @@ def _render_salary_insights(salary, experience_level, company_size):
         st.write(f"* {tip}")
 
     st.warning(
-        "**Note:** This prediction has a margin of error of approximately "
-        "**±$16,000** (based on the model's test MAE). Actual salaries may "
-        "vary depending on factors not captured by the model, such as "
-        "specific skills, negotiation, benefits, and equity."
+        "**Note:** This prediction has a margin of error of "
+        "approximately **±$16,000** (based on the model's test "
+        "MAE). Actual salaries may vary depending on factors "
+        "not captured by the model, such as specific skills, "
+        "negotiation, benefits, and equity."
     )
