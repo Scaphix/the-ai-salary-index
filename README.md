@@ -1,17 +1,12 @@
-# The AI Salary Index
+# [The AI Salary Index](https://tasi-the-ai-salary-index-361138766018.herokuapp.com/page_cluster_body)
 
 ## Overview
 
-Finding the right salary for AI/ML talent is complex. As a recruiter, you juggle multiple variables: candidate experience, location, company size, remote preferences, etc.. While competing for top talent and protecting your margins through careful commission management.
+Pricing AI/ML talent is hard — experience, location, and company size all pull salary in different directions. **The AI Salary Index** uses 15,000+ global job listings to give recruiters three things:
 
-**The AI Salary Index** solves this with two core capabilities:
-
-1. **Salary Prediction**: Input a prospect's profile (experience level, location, company size, remote preference) and instantly get a data-driven salary recommendation that positions you competitively in the market.
-
-2. **Market Segmentation**: We combine salary prediction with residual-based market segmentation to not only estimate what a role should pay, but also classify whether a given position is fairly compensated, overpaid, or underpaid relative to market expectations.
-
-Built on 15,000+ global AI job listings, this index helps you make faster, smarter hiring decisions with confidence.
-
+1. **Salary Prediction** — A Gradient Boosting model (R² = 0.86) predicts salary from a candidate's profile.
+2. **Market Segmentation** — PCA + K-Means clustering groups roles into three segments split by experience and geography, revealing where pay premiums and penalties lie.
+3. **Data-driven insights** — Correlation analysis and hypothesis testing identify which attributes actually drive compensation.
 
 
 ## Dataset Content
@@ -47,28 +42,18 @@ It contains **15,000+ synthetic AI job listings** from 50+ countries, representi
 
 ## Business Requirements
 
-From a business perspective, this project supports the strategic goals of recruiting firms and talent acquisition teams by:
-
-- **Optimizing compensation strategy** through data-driven salary predictions that balance competitiveness with commission margins.
-- **Accelerating hiring decisions** by providing instant market intelligence on salary benchmarks and role positioning.
-- **Reducing recruitment costs** through precise salary estimates that prevent over-bidding and improve candidate placement success rates.
-- **Enhancing market positioning** by classifying roles as fairly paid, overpaid, or underpaid relative to market expectations.
-
-Ultimately, this project aligns predictive analytics with the recruiter's core objective of placing top talent quickly while maximizing profitability.
+From a business perspective, this project helps recruiting firms optimise compensation strategy, accelerate hiring decisions, and reduce recruitment costs through data-driven salary intelligence.
 
 ---
 
-To achieve the outlined objectives, the project will focus on the following key requirements.
+**Business Requirement 1 — Data Visualisation & Correlation Study**
+- Identify which attributes correlate most closely with AI/ML salary levels.
 
-**Business Requirement 1: Salary Prediction (Machine Learning)**
-- Develop a machine learning regression model capable of predicting salary for an AI/ML job role based on candidate profile attributes (experience level, location, company size, remote preference).
-- The system should output a predicted salary range to support recruiters in making competitive, data-driven compensation offers.
-- Provide confidence intervals and key factors influencing the prediction for transparency and decision-making.
+**Business Requirement 2 — Salary Prediction**
+- Predict salary for a given candidate profile using a regression model.
 
-**Business Requirement 2: Market Segmentation & Clustering (Machine Learning)**
-- Group AI/ML roles into market-based clusters to identify distinct job segments and labor market patterns.
-- Enable recruiters to classify new roles into these clusters and benchmark them against similar positions in the market.
-- Provide cluster characteristics and visualizations to facilitate comparison and strategic talent deployment decisions.
+**Business Requirement 3 — Market Segmentation**
+- Group AI roles into market-based clusters to reveal distinct salary segments and labour market patterns.
 
 ## Hypotheses and how to validate them?
 
@@ -83,197 +68,117 @@ To better understand the factors influencing salary levels in the AI/ML job mark
 
 These hypotheses will be tested through exploratory data analysis and statistical testing to identify whether the respective features are influential predictors of salary in the AI/ML market.
 
-## How Hypotheses Connect to Business Requirements and Implementation
-
-The hypotheses form the **analytical foundation** that drives the implementation of Business Requirement 1 (Salary Prediction). Here's how they interconnect:
-
-### **Hypothesis → EDA & Validation → BR1 Implementation**
-
-1. **Hypotheses Identify Salary Drivers**: H1, H2, H3, and H4 propose specific features that influence salary (experience level, remote ratio, years of experience, job category). These are **candidate input features** for the regression model.
-
-2. **Validation Steps = EDA Methods**: The validation column in the hypotheses table outlines the exact exploratory techniques that will confirm which hypotheses are true:
-   - Visualizations (distributions, scatter plots) reveal patterns visually
-   - Statistical tests (ANOVA, correlation, Kruskal-Wallis) confirm statistical significance
-   - These same techniques appear in the Rationale Mapping under BR1
-
-3. **Confirmed Hypotheses → Model Features**: Only features with validated hypotheses are included in the regression model:
-   - If H1 is confirmed, `experience_level` becomes a strong predictor variable
-   - If H4 is confirmed, `job_category` is included in feature engineering
-   - This ensures the model is **built on evidence, not assumptions**
-
-4. **BR2 (Market Segmentation) Builds on BR1**: The market segment labels (Fair, Overpaid, Underpaid) are derived from the regression model's residuals. Confirmed hypotheses drive the regression, which in turn defines the segments — making BR1 and BR2 tightly connected.
 
 ### **Visual Flow**
 ```
+Salary Study (Explore AI/ML compensation data)
+    ↓
 Hypotheses (What drives salary?)
     ↓
-Exploratory Data Analysis (Validate with visualizations & statistics)
+Exploratory Data Analysis (Validate with visualisations & statistics)
     ↓
 Feature Selection (Include only validated features)
     ↓
-BR1: Regression Model (Predict salary with confidence)
-    ↓
-BR2: Market Segments (Fair/Overpaid/Underpaid from residuals)
+BR1: Correlation Study → BR2: Salary Prediction → BR3: Market Segmentation
 ```
 
-## The rationale to map the business requirements to the Data Visualizations and ML tasks
+## Mapping Business Requirements to Data Visualisations and ML Tasks
 
-This section explains how each business requirement is addressed by specific analyses, visualizations, and ML techniques. It ensures that insights and predictions directly support the business goals and can be interpreted by stakeholders.
+**BR1 — Data Visualisation & Correlation Study**
+- Salary distribution plots by experience level, location, and remote ratio
+- Pearson/Spearman correlation analysis and hypothesis testing (H1–H4)
+- Output: Identify which attributes drive AI/ML compensation
 
-**Business Requirement 1: Salary Prediction (Machine Learning)**
-- Develop a **regression model** to predict salary based on candidate profile features (experience, location, company size, remote preference).
-- **Visualizations**: Create salary distribution plots by experience level, location, and remote ratio to identify key salary drivers.
-- **Statistical Analysis**: Conduct correlation analysis and feature importance assessment to understand which variables most influence salary predictions.
-- **Output**: Provide predicted salary ranges with confidence intervals for recruiter decision-making.
+**BR2 — Salary Prediction (Regression)**
+- GradientBoostingRegressor trained on candidate profile features (experience, location, company size)
+- Feature importance assessment and model evaluation (R², MAE, RMSE)
+- Output: Predicted salary with confidence range
 
-**Business Requirement 2: Market Segmentation & Salary Positioning (Machine Learning)**
-- Use **residual-based segmentation** to classify roles as Fair, Overpaid, or Underpaid based on how actual salary compares to the regression model's prediction.
-- **Visualizations**: Residual scatter plots coloured by segment, segment distribution bar charts, and salary band ranges alongside predictions.
-- **Statistical Analysis**: Analyse residual distributions and segment profiles to validate meaningful separation.
-- **Output**: Salary positioning context shown alongside each prediction to support negotiation and benchmarking.
-
-> **Note — Original BR2 and why it was revised:**
-> The original Business Requirement 2 was defined as:
->
-> *Business Requirement 2: Market Segmentation & Clustering (Machine Learning)*
-> - *Develop a **clustering model** (K-means or hierarchical clustering) to identify distinct market segments within AI/ML roles.*
-> - *Visualizations: Create scatter plots or t-SNE visualizations of clusters; generate cluster profiles showing average salary, experience level, and job category composition.*
-> - *Statistical Analysis: Analyze cluster characteristics and validate segment homogeneity to ensure meaningful market divisions.*
-> - *Output: Enable recruiters to classify new roles into identified clusters and benchmark against similar market segments.*
->
-> During development, the KMeans clustering pipeline (Notebook 06) revealed that the AI salary dataset has **no strong natural cluster structure** — the data forms a continuous distribution rather than discrete groups. The silhouette score of 0.53 confirmed weak separation, and PCA visualisation showed heavily overlapping clusters with centroids too close together (see TESTING section for details).
->
-> Rather than presenting artificially imposed clusters as meaningful segments, we **revised BR2 to use residual-based segmentation**: the regression model (BR1) predicts a "fair" salary, and the residual (actual − predicted) naturally classifies roles as Overpaid, Fair, or Underpaid. This approach produces **actionable, interpretable segments** grounded in the regression model's predictions, rather than arbitrary geometric partitions of the feature space.
->
-> The original clustering work is preserved in the dashboard (Cluster Analysis page) for transparency, alongside an honest assessment of its limitations.
+**BR3 — Market Segmentation (Clustering)**
+- PCA for dimensionality reduction + K-Means (k=3) to segment roles
+- Cluster profiling by experience level, geography, and salary band
+- Output: Three market segments with distinct compensation patterns
 
 ---
 
 ## ML Business Cases
 
-### **Business Case 1: Salary Prediction (Regression Model)**
+### **Business Case 2: Salary Prediction (Regression)**
 
-**ML Task**: Predict annual salary in USD for an AI/ML job role based on candidate profile attributes.
-
-**Model Type**: Supervised, single-output, regression model
-
-**Ideal Outcome**: Provide recruiters with accurate, data-driven salary recommendations that balance market competitiveness with profit margins, reducing both under-bidding and over-compensation during the hiring process.
-
-**Model Success Metrics**:
-- At least **0.75 R² score** on both train and test sets
-- **RMSE (Root Mean Squared Error) ≤ 15%** of the average salary in the dataset
-- **Coefficient of determination (R²) difference** between train and test ≤ 0.05 (no overfitting)
-
-**Model Failure Conditions - The model is considered a failure if**:
-- After 3 months of recruiter usage, salary predictions are systematically off by >20% for more than 30% of placements
-- R² score drops below 0.65 on test data
-- RMSE exceeds 20% of average salary on test set
-- Recruiters report consistent loss of candidates due to unrealistic salary offers
-
-**Model Output**: 
-- Predicted salary value in USD
-- Confidence interval (e.g., 95% CI for prediction uncertainty)
-- Top 3-5 features influencing the prediction (for recruiter transparency)
-
-**Deployment Context**: Real-time prediction via forms or salesperson interview process; predictions made on-the-fly for individual candidates (not batch processing)
-
-**Current Heuristics**: Recruiters currently estimate salary based on intuition, competitor research, and historical experience; no data-driven predictive model exists
-
-**Training Data**:
-- **Source**: Global AI Job Market & Salary Trends 2025 (Kaggle dataset: `ai_job_dataset1.csv`)
-- **Sample Size**: ~15,000 job postings
-- **Target Variable**: `salary_usd` (continuous, annual compensation in USD)
-- **Feature Variables**: `experience_level`, `remote_ratio`, `years_experience`, `job_category`, `company_size`, `company_location`, `education_required`, `benefits_score`, `employment_type`
-- **Exclusions**: `job_id`, `job_title`, `salary_currency`, `salary_local`, `posting_date`, `application_deadline`, `job_description_length`, `required_skills` (identifiers, redundant, or not predictive)
+| | |
+|---|---|
+| **ML Task** | Predict annual salary (USD) from candidate profile attributes |
+| **Model Type** | Supervised regression (GradientBoostingRegressor) |
+| **Ideal Outcome** | Accurate salary recommendations that reduce under-bidding and over-compensation |
+| **Success Metrics** | R² ≥ 0.75 on train & test; RMSE ≤ 15% of mean salary; train–test R² gap ≤ 0.05 |
+| **Failure Conditions** | R² < 0.65 on test; RMSE > 20% of mean salary; predictions off by >20% for >30% of placements |
+| **Output** | Predicted salary (USD), confidence interval, top features driving the prediction |
+| **Target Variable** | `salary_usd` |
+| **Features** | `experience_level`, `company_size`, `company_location`, `employee_residence` |
+| **Data** | ~15,000 job postings from Kaggle (`ai_job_dataset1.csv`) |
 
 ---
 
-### **Business Case 2: Market Segmentation (Residual Classification)**
+### **Business Case 3: Market Segmentation (Clustering)**
 
-**ML Task**: Classify AI/ML roles into market segments (Fair, Overpaid, Underpaid) based on regression residuals — how far actual salary deviates from the model-predicted fair market value.
-
-**Model Type**: Hybrid — residual clustering (unsupervised) to generate labels, then supervised multi-class classifier
-
-**Ideal Outcome**: Enable recruiters to assess whether a compensation offer is market-aligned, above-market, or below-market for a given candidate profile, supporting negotiation and retention decisions.
-
-**Model Success Metrics**:
-- **Silhouette Score ≥ 0.45** (indicates well-separated and cohesive clusters)
-- **Optimal cluster count: 3-6 clusters** (interpretable and actionable for recruiter decisions)
-- **Within-cluster salary variance** < 30% of the cluster's mean salary (homogeneous salary ranges within clusters)
-- **Minimum cluster size**: At least 500 samples per cluster (statistically robust and representative)
-
-**Model Failure Conditions - The model is considered a failure if**:
-- Classification accuracy < 0.65 on test data
-- Any segment contains fewer than 10% of the dataset (too imbalanced)
-- Segment labels do not align with residual direction (e.g., "Overpaid" segment has negative mean residual)
-- Recruiters report that segment assignments do not provide actionable salary positioning context
-
-**Model Output**:
-- Cluster ID assigned to each role (categorical: 0, 1, 2, ..., n)
-- Cluster profile: average salary, experience level distribution, job category composition, remote ratio breakdown, company size distribution
-- Cluster comparison visualizations (scatter plots, box plots, heatmaps)
-
-**Deployment Context**: Segment label shown alongside salary prediction in the Streamlit app; recruiters see salary positioning context for each candidate profile
-
-**Current Heuristics**: No systematic approach exists to assess whether a salary offer is fair relative to market; recruiters rely on intuition and ad-hoc benchmarking
-
-**Training Data**:
-- **Source**: Global AI Job Market & Salary Trends 2025 (Kaggle dataset: `ai_job_dataset1.csv`)
-- **Sample Size**: ~15,000 job postings
-- **Feature Variables**: `experience_level`, `job_category`, `salary_usd`, `remote_ratio`, `years_experience`, `company_size`, `company_location`, `employment_type`, `education_required`, `benefits_score`
-- **Exclusions**: `job_id`, `job_title`, `salary_currency`, `salary_local`, `posting_date`, `application_deadline`, `job_description_length`, `required_skills` (identifiers or not relevant for classification)
+| | |
+|---|---|
+| **ML Task** | Group AI roles into market segments based on profile features (excluding salary) |
+| **Model Type** | Unsupervised clustering (PCA + K-Means, k=3) |
+| **Ideal Outcome** | Distinct segments that reveal experience- and geography-based compensation patterns |
+| **Success Metrics** | Silhouette score ≥ 0.45; 3–6 interpretable clusters; min 500 samples per cluster |
+| **Failure Conditions** | Silhouette < 0.35; clusters lack meaningful profile or salary differentiation |
+| **Output** | Cluster ID per role, cluster profiles (experience, geography, salary band distribution) |
+| **Features** | All profile features except `salary_usd`, `required_skills`, `company_name` |
+| **Data** | Same dataset, train + test combined (14,701 rows) |
 
 
-## User Stories
+## Epics & User Stories
 
-### Business Requirement 1: Salary Prediction
+### Epic 1 — Data Insights (BR1)
 
-- **US 1.1** — As a recruiter, I can input a candidate's profile (experience level, company location, employee residence, company size) into an interactive form so that I can get an instant predicted salary in USD.
-  - **ML Task**: Serve a trained GradientBoostingRegressor pipeline through a Streamlit interface. Pipeline includes ordinal encoding, frequency encoding, and feature selection.
+- **US 1.1** — As a recruiter, I can view a project summary page to understand the dataset, terminology, and business requirements.
+  - **Viz Task**: Data profiling in a Streamlit information page.
 
-- **US 1.2** — As a recruiter, I can view the model's performance metrics (R², MAE, RMSE) and feature importance plot so that I can assess the reliability of the predictions.
-  - **Viz Task**: Display train vs test evaluation metrics and a feature importance bar chart generated from the fitted model.
+- **US 1.2** — As a recruiter, I can view an interactive salary study to understand how salary varies by experience level, company size, and location.
+  - **Viz Task**: Box plots, histograms with KDE, parallel categories plot (Plotly).
 
-- **US 1.3** — As a recruiter, I can view an interactive study of salary data so that I can understand how salary varies by experience level, company size, and education requirement.
-  - **Viz Task**: Exploratory Data Analysis — box plots, histograms with KDE, parallel categories plot (Plotly) on the cleaned dataset.
+- **US 1.3** — As a recruiter, I can review validated hypotheses to trust which factors genuinely influence AI salaries.
+  - **Statistical Task**: Kruskal-Wallis H-test, Spearman and Pearson correlation with supporting visualisations.
 
-- **US 1.4** — As a recruiter, I can review validated project hypotheses so that I can trust which factors genuinely influence AI salaries and which do not.
-  - **ML Task**: Hypothesis validation using Kruskal-Wallis H-test, Spearman and Pearson correlation. Display statistical test results (p-values, effect sizes) alongside supporting visualizations.
+### Epic 2 — Salary Prediction (BR2)
 
-- **US 1.5** — As a recruiter, I can view a project summary page so that I can quickly understand the dataset, terminology, and business requirements before exploring the data.
-  - **Viz Task**: Data profiling — dataset shape, feature descriptions, and missing-value checks presented in a Streamlit information page.
+- **US 2.1** — As a recruiter, I can input a candidate's profile (experience level, company location, employee residence, company size) and get an instant predicted salary in USD.
+  - **ML Task**: GradientBoostingRegressor pipeline served through a Streamlit form.
 
-### Business Requirement 2: Market Segmentation & Salary Positioning
+- **US 2.2** — As a data practitioner, I can view model performance metrics (R², MAE, RMSE) and feature importance to evaluate the model's accuracy and identify which variables drive predictions.
+  - **Viz Task**: Train vs test evaluation metrics and feature importance bar chart.
 
-- **US 2.1** — As a recruiter, I can see whether a predicted salary falls in the Fair, Overpaid, or Underpaid segment so that I can assess if a compensation offer is market-aligned.
-  - **ML Task**: Residual-based market segmentation using regression residuals clustered into 3 segments, displayed as salary bands alongside each prediction.
+### Epic 3 — Market Segmentation (BR3)
 
-- **US 2.2** — As a technical user, I can understand how market segments are derived so that I can interpret the methodology.
-  - **Viz Task**: Residual scatter plot (predicted vs actual), segment distribution chart, and segment profile descriptions.
+- **US 3.1** — As a recruiter, I can see which market segment a role belongs to so that I can understand its compensation context.
+  - **ML Task**: PCA + K-Means clustering (k=3) assigning roles to experience/geography-based segments.
+
+- **US 3.2** — As a data practitioner, I can understand how clusters are derived and their limitations.
+  - **Viz Task**: Silhouette plot, cluster profiles, and distribution charts with methodology explanation.
 
 ### User Stories to Notebook & Dashboard Page Mapping
 
-| User Story | Notebook | Dashboard Page |
-|---|---|---|
-| US 1.1 | 05-ModelingEvaluation-PredictSalary | Predict Salary |
-| US 1.2 | 05-ModelingEvaluation-PredictSalary | Predict Salary |
-| US 1.3 | 02-JobMarketStudy | AI Salary Study |
-| US 1.4 | 02-JobMarketStudy | Project Hypothesis |
-| US 1.5 | 01-DataCollection | Quick Project Summary |
-| US 2.1 | 07-MarketSegmentClassifier | Predict Salary |
-| US 2.2 | 06-ModelingEvaluation-Cluster | Predict Salary |
+| Epic | User Story | Notebook | Dashboard Page |
+|---|---|---|---|
+| 1 | US 1.1 | 01-DataCollection | Quick Project Summary |
+| 1 | US 1.2 | 02-JobMarketStudy | AI Salary Study |
+| 1 | US 1.3 | 02-JobMarketStudy | Project Hypothesis |
+| 2 | US 2.1 | 05-ModelingEvaluation-PredictSalary | Predict Salary |
+| 2 | US 2.2 | 05-ModelingEvaluation-PredictSalary | Predict Salary |
+| 3 | US 3.1 | 06-ModelingEvaluation-Cluster | Cluster Analysis |
+| 3 | US 3.2 | 06-ModelingEvaluation-Cluster | Cluster Analysis |
 
 
 ## Dashboard Design
 
 The dashboard is developed in Streamlit and designed to guide the user from business understanding to actionable insights and model-based predictions.
 It consists of five main pages, each mapped to specific business requirements.
-
-The goal of the dashboard is to provide both descriptive insights and predictive intelligence to support data-driven salary decisions in AI/ML recruitment.
-It serves two main user groups:
-
-- **Recruiters**: who need fast, data-driven salary recommendations and market positioning for candidates.
-- **HR analysts**: who need to explore salary patterns, validate hypotheses, and understand market segmentation.
 
 ### Page 1: Quick Project Summary
 **Purpose**: Provide a clear overview of the project and orient users.
@@ -296,7 +201,7 @@ It serves two main user groups:
 - Parallel categories plot: interactive Plotly visualisation showing salary flow across experience level, remote ratio, and company size
 
 ### Page 3: Project Hypothesis and Validation
-**Purpose**: Present the four project hypotheses and their validation outcomes. Addresses **Merit criterion 4.3**.
+**Purpose**: Present the four project hypotheses and their validation outcomes. 
 
 **Sections**:
 - **H1** — Experience level is the dominant salary driver: verdict (Confirmed), boxplot, statistical evidence
@@ -306,27 +211,26 @@ It serves two main user groups:
 - Each hypothesis includes a plain-English conclusion and checkbox to reveal the supporting visualisation
 
 ### Page 4: Predict Salary
-**Purpose**: Address **Business Requirement 1** (Salary Prediction) and **Business Requirement 2** (Market Segmentation). Allows users to input a candidate profile and receive a salary prediction with market positioning.
+**Purpose**: Address **Business Requirement 2** (Salary Prediction). Allows users to input a candidate profile and receive a predicted annual salary with contextual insights.
 
 **Sections**:
 - Pipeline explanation: two-stage pipeline overview (data cleaning/feature engineering + regression model)
 - Model performance metrics: R² and MAE for both train and test sets, with success/failure statement
 - Feature importance: bar chart showing the top predictive features (experience_level > 50%)
 - Live prediction interface: dropdown widgets for experience level, company size, company location, employee residence
-- Prediction output: predicted salary, confidence range, market positioning label (Overpaid/Fair/Underpaid)
-- Actionable insights: tailored recommendations based on the predicted profile
+- Prediction output: predicted salary with salary tier context and actionable takeaways
 
 ### Page 5: Cluster Analysis
-**Purpose**: Address **Business Requirement 2** (Market Segmentation). Shows cluster analysis performance and interpretation.
+**Purpose**: Address **Business Requirement 3** (Market Segmentation). Shows cluster analysis performance and interpretation, segmenting AI professionals by geographic market.
 
 **Sections**:
 - ML pipeline overview: encoding, feature selection, scaling, PCA, KMeans steps
 - Model performance: silhouette score (0.53) with honest assessment of cluster separation
 - Silhouette plot: visualisation of cluster cohesion
+- Cluster distribution: interactive bar and line charts showing cluster breakdown across salary levels
 - Features defining clusters: bar chart of most important features for cluster assignment
 - Cluster profiles: table with per-cluster statistics and plain-English interpretation of each segment (Emerging-market, European-market, Established-market professionals)
-- Cluster distribution: interactive bar and line charts showing cluster breakdown across salary levels
-- Notes on alternative approaches considered (residual clustering, UMAP + HDBSCAN, K-Prototypes)
+- Limitations & next steps: honest note on weak cluster separation and alternative approaches considered
 
 ## Technologies Used
 
@@ -344,185 +248,77 @@ It serves two main user groups:
 - **Heroku** — cloud deployment platform
 - **Git / GitHub** — version control
 
-# TESTING
+## Testing
 
-## User Story Testing
+### Manual Testing
 
-Each page of the dashboard corresponds to a specific user story, ensuring that the application meets the needs of both non-technical and technical users. The dashboard was manually tested using these user stories as a basis for determining success.
-
-For the Jupyter notebooks, manual testing against user stories was deemed irrelevant, as their execution relies on consecutive functions being successful. Instead, correctness was ensured through code validation and sequential function execution.
-
-### User Story 1: Quick Project Summary (US 1.5)
-
-As a recruiter, I can view a project summary page so that I can quickly understand the dataset, terminology, and business requirements before exploring the data.
-
-| Feature | Action | Expected Result | Test Result |
-|---|---|---|---|
-| Project Summary Page | Navigate to Quick Project Summary | Page displays general information, terms & jargon, dataset overview, and business requirements. | Pass |
-| Business Requirements | Read the success callout | Three business requirements (BR1: salary correlations, BR2: salary prediction, BR3: market segments) are clearly listed. | Pass |
-| README Link | Click the project README link | External link opens in a new tab, directing to the GitHub repository. | Pass |
-
-### User Story 2: AI Salary Study (US 1.3)
-
-As a recruiter, I can view an interactive study of salary data so that I can understand how salary varies by experience level, company size, and location.
-
-| Feature | Action | Expected Result | Test Result |
-|---|---|---|---|
-| Salary Study Page | Navigate to AI Salary Study | Page loads with business requirement statement, KPI metrics, and all sections visible. | Pass |
-| Dataset Inspection | Tick "Inspect Dataset" checkbox | Table shows number of rows (15,000+), columns, and first 10 rows. | Pass |
-| KPI Metrics | View metric cards | Four KPI cards display: total jobs, median salary, top country, and most common experience level. | Pass |
-| Salary Distribution | Tick "Show Distribution of AI Salaries" checkbox | Histogram with KDE appears, showing right-skewed distribution. Accompanying text explains median vs mean. | Pass |
-| Salary by Location | View location section | Two horizontal bar charts display (company location and employee residence), each showing top 12 countries by median salary. | Pass |
-| Correlation Study | Click through tabs (Years of Experience, Experience Level, Company Size, Remote Ratio) | Each tab displays the corresponding plot (scatter, boxplot). Introductory text explains key findings. | Pass |
-| Parallel Categories Plot | Scroll to parallel categories section | Interactive Plotly parallel categories plot renders with salary band colouring. Text interpretation explains how to read the plot and key takeaways. | Pass |
-
-### User Story 3: Project Hypothesis and Validation (US 1.4)
-
-As a recruiter, I can review validated project hypotheses so that I can trust which factors genuinely influence AI salaries and which do not.
-
-| Feature | Action | Expected Result | Test Result |
-|---|---|---|---|
-| Hypothesis Page | Navigate to Project Hypothesis | Page loads with introductory text and all four hypotheses displayed with Statement, Validation method, and Verdict. | Pass |
-| H1: Experience Level | Read verdict and tick "Show Salary by Experience Level" | Verdict shows Confirmed (green). Checkbox reveals boxplot of salary by experience level. Recommended action is provided. | Pass |
-| H2: Remote Ratio | Read verdict and tick "Show Salary by Remote Ratio" | Verdict shows Rejected (red). Checkbox reveals boxplot confirming near-identical medians across remote ratios. | Pass |
-| H3: Years of Experience | Read verdict and tick "Show Salary vs Years of Experience" | Verdict shows Confirmed (green). Checkbox reveals scatter plot with regression line and Pearson r value in title. | Pass |
-| H4: Company Size | Read verdict and tick "Show Salary by Company Size" | Verdict shows Confirmed (green). Checkbox reveals boxplot with specific median values ($95k, $105k, $122k) in the verdict text. | Pass |
-| Conclusion | Scroll to conclusion section | Summary states 3/4 hypotheses confirmed. Implication for modelling is explained (prioritise experience_level, deprioritise remote_ratio). | Pass |
-
-### User Story 4: Predict Salary (US 1.1, US 1.2, US 2.1)
-
-As a recruiter, I can input a candidate's profile into an interactive form so that I can get an instant predicted salary and market positioning.
-
-| Feature | Action | Expected Result | Test Result |
-|---|---|---|---|
-| Predict Salary Page | Navigate to Predict Salary | Page loads with business requirement statement, pipeline explanation, and model performance metrics. | Pass |
-| Pipeline Explanation | Read "How the Model Works" section | Two-stage pipeline is described: data cleaning/feature engineering and regression. Key features and model parameters are listed. | Pass |
-| Model Performance | View metric cards | Train R² (0.878), Test R² (0.863), Train MAE ($15,208), Test MAE ($16,124) are displayed. Success statement confirms R² ≥ 0.70 criterion is met. | Pass |
-| Feature Importance | Tick "Show Feature Importance Plot" checkbox | Bar chart image loads showing experience_level as the dominant feature. Accompanying text explains the top predictors. | Pass |
-| Live Prediction Widgets | Select values from all four dropdowns (Experience Level, Company Size, Company Location, Employee Residence) | All dropdowns render with valid options. Experience level shows human-readable labels (Entry-level, Mid-level, etc.). | Pass |
-| Run Prediction | Click "Predict Salary" button | Predicted salary appears in USD with tier classification (top tier / above average / mid-range / lower end). | Pass |
-| Market Positioning | View output after prediction | Three market segments displayed (Fair, Overpaid, Underpaid) with salary ranges based on ±MAE. Explanation of how to use each segment is provided. | Pass |
-| Actionable Insights | Read "Key Takeaways" section | Tailored tips are shown based on the selected profile (e.g., experience level, company size). Warning about ±$16k margin of error is displayed. | Pass |
-
-### User Story 5: Cluster Analysis (US 2.2)
-
-As a technical user, I can understand how market segments are derived so that I can interpret the methodology.
-
-| Feature | Action | Expected Result | Test Result |
-|---|---|---|---|
-| Cluster Analysis Page | Navigate to Cluster Analysis | Page loads with pipeline description, silhouette score, and all sections visible. | Pass |
-| Pipeline Steps | Read pipeline description | Seven-step pipeline is listed (OrdinalMappingEncoder → OneHotEncoder → FrequencyEncoder → SmartCorrelatedSelection → StandardScaler → PCA → KMeans). | Pass |
-| Silhouette Plot | View silhouette image | Silhouette plot renders. Accompanying text explains what silhouette scores mean and interprets the 0.53 score. | Pass |
-| Cluster Distribution | View bar and line charts | Interactive Plotly bar chart shows cluster counts across salary bands. Line chart shows relative percentages per cluster. | Pass |
-| Features Defining Clusters | View feature importance image | Bar chart renders showing most important features. Text confirms company_location and employee_residence are the dominant drivers. | Pass |
-| Cluster Profiles | View profile table and interpretation | Table displays per-cluster statistics. Text describes each cluster (Emerging-market, European-market, Established-market) with actionable interpretation. | Pass |
-| Limitations | Read limitations section | Warning explains weak cluster separation (0.53 silhouette) and lists alternative approaches explored (residual clustering, UMAP + HDBSCAN, K-Prototypes). | Pass |
+#### User Story Testing
+* Dashboard was manually tested using user stories as a basis for determining success.
+* Jupyter notebooks were reliant on consecutive functions being successful so manual testing against user stories was deemed irrelevant.
 
 ---
 
-## Cluster Validation Testing
+*As a recruiter, I can view a project summary page so that I can quickly understand the dataset, terminology, and business requirements before exploring the data (US 1.1).*
 
-USING PCA course code
-the code plots the cluster assignments in PCA space to visually verify the clusters are well-separated.
-[](document/output1)
+| Feature | Action | Expected Result | Actual Result |
+| --- | --- | --- | --- |
+| Project Summary Page | Navigate to Quick Project Summary | Page displays general information, terms & jargon, dataset overview, and business requirements | Functions as intended |
+| Business Requirements | Read the success callout | Three business requirements (BR1: salary correlations, BR2: salary prediction, BR3: market segments) are clearly listed | Functions as intended |
+| README Link | Click the project README link | External link opens in a new tab, directing to the GitHub repository | Functions as intended |
 
-These clusters have significant issues. Here's an honest assessment:
+---
 
-What's concerning:
+*As a recruiter, I can view an interactive study of salary data so that I can understand how salary varies by experience level, company size, and location (US 1.2).*
 
-1. Heavy overlap between all three clusters
-Red, blue, and green dots are heavily mixed throughout the entire plot — you cannot draw a clean boundary between any two clusters. This indicates the clusters are not well-separated in these two dimensions.
+| Feature | Action | Expected Result | Actual Result |
+| --- | --- | --- | --- |
+| Salary Study Page | Navigate to AI Salary Study | Page loads with business requirement statement, KPI metrics, and all sections visible | Functions as intended |
+| Dataset Inspection | Tick "Inspect Dataset" checkbox | Table shows number of rows (15,000+), columns, and first 10 rows | Functions as intended |
+| KPI Metrics | View metric cards | Four KPI cards display: total jobs, median salary, top country, and most common experience level | Functions as intended |
+| Salary Distribution | Tick "Show Distribution of AI Salaries" checkbox | Histogram with KDE appears, showing right-skewed distribution with median vs mean comparison | Functions as intended |
+| Salary by Location | View location section | Two horizontal bar charts display (company location and employee residence), each showing top 12 countries by median salary | Functions as intended |
+| Correlation Study | Click through tabs (Years of Experience, Experience Level, Company Size, Remote Ratio) | Each tab displays the corresponding plot (scatter, boxplot) with introductory text | Functions as intended |
+| Parallel Categories Plot | Scroll to parallel categories section | Interactive Plotly parallel categories plot renders with salary band colouring | Functions as intended |
 
-2. Centroids are too close together
-All three black X marks sit within a tiny region (~-0.5 to 0.5 on both axes) right in the centre of the cloud. Ideally they should be far apart. Close centroids mean the clusters are not pulling observations from meaningfully different regions of the space.
+---
 
-3. The data forms one large blob
-There are no natural groupings visible — it's one continuous elliptical cloud. KMeans has drawn arbitrary boundaries through it rather than finding genuine structure.
+*As a recruiter, I can review validated project hypotheses so that I can trust which factors genuinely influence AI salaries and which do not (US 1.3).*
 
-The partial defence:
+| Feature | Action | Expected Result | Actual Result |
+| --- | --- | --- | --- |
+| Hypothesis Page | Navigate to Project Hypothesis | Page loads with introductory text and all four hypotheses displayed with Statement, Validation method, and Verdict | Functions as intended |
+| H1: Experience Level | Read verdict and tick "Show Salary by Experience Level" | Verdict shows Confirmed (green). Checkbox reveals boxplot of salary by experience level | Functions as intended |
+| H2: Remote Ratio | Read verdict and tick "Show Salary by Remote Ratio" | Verdict shows Rejected (red). Checkbox reveals boxplot confirming near-identical medians | Functions as intended |
+| H3: Years of Experience | Read verdict and tick "Show Salary vs Years of Experience" | Verdict shows Confirmed (green). Checkbox reveals scatter plot with regression line and Pearson r value | Functions as intended |
+| H4: Company Size | Read verdict and tick "Show Salary by Company Size" | Verdict shows Confirmed (green). Checkbox reveals boxplot with specific median values ($95k, $105k, $122k) | Functions as intended |
+| Conclusion | Scroll to conclusion section | Summary states 3/4 hypotheses confirmed. Implication for modelling is explained | Functions as intended |
 
-You're only seeing 2 of 4 PCA dimensions — separation may exist in the other 2 dimensions
-PCA Component 0 + 1 together explain only ~25% of the data, so 75% of the structure is invisible here
-There is some directionality — red leans left, green leans bottom-right, blue centre-right
-**The conclusion:**
-This plot is a warning sign that the underlying data may not have strong natural cluster structure. The clusters are being imposed by KMeans rather than discovered. The business profiles (salary differentiation) are still valid and useful, but you should interpret them as customer segments defined by the model, not naturally occurring distinct groups in the data.
+---
 
+*As a recruiter, I can input a candidate's profile into an interactive form so that I can get an instant predicted salary (Business Requirement 2).*
 
-Option 1 — Try a different clustering algorithm
+| Feature | Action | Expected Result | Actual Result |
+| --- | --- | --- | --- |
+| Predict Salary Page | Navigate to Predict Salary | Page loads with business requirement statement, pipeline explanation, and model performance metrics | Functions as intended |
+| Pipeline Explanation | Read "How the Model Works" section | Two-stage pipeline is described: data cleaning/feature engineering and regression model | Functions as intended |
+| Model Performance | View metric cards | Train R² (0.878), Test R² (0.863), Train MAE ($15,208), Test MAE ($16,124) are displayed with success statement | Functions as intended |
+| Feature Importance | Tick "Show Feature Importance Plot" checkbox | Bar chart image loads showing experience_level as the dominant feature | Functions as intended |
+| Live Prediction Widgets | Select values from all four dropdowns | All dropdowns render with valid options. Experience level shows human-readable labels (Entry-level, Mid-level, etc.) | Functions as intended |
+| Run Prediction | Click "Predict Salary" button | Predicted salary appears in USD with tier classification (top tier / above average / mid-range / lower end) | Functions as intended |
+| Actionable Insights | Read "Key Takeaways" section | Tailored tips are shown based on the selected profile. Warning about ±$16k margin of error is displayed | Functions as intended |
 
-KMeans assumes spherical, equal-sized clusters and uses Euclidean distance. Your data clearly doesn't fit that shape. Alternatives:
+---
 
-Algorithm	Why it might help
-Gaussian Mixture Models (GMM)	Allows elliptical clusters, soft assignments — better for overlapping data
-Agglomerative (Hierarchical)	Doesn't assume cluster shape, uses dendrogram to pick k
-DBSCAN / HDBSCAN	Finds arbitrary shapes, doesn't need k specified, handles noise
+*As a technical user, I can view the cluster analysis to understand how market segments are derived and interpret the methodology (Business Requirement 3).*
 
-from sklearn.mixture import GaussianMixture
-from sklearn.cluster import AgglomerativeClustering, DBSCAN
-Option 2 — Replace PCA with UMAP for dimensionality reduction
+| Feature | Action | Expected Result | Actual Result |
+| --- | --- | --- | --- |
+| Cluster Analysis Page | Navigate to Cluster Analysis | Page loads with pipeline description, silhouette score, and all sections visible | Functions as intended |
+| Pipeline Steps | Read pipeline description | Seven-step pipeline is listed (OrdinalMappingEncoder → OneHotEncoder → FrequencyEncoder → SmartCorrelatedSelection → StandardScaler → PCA → KMeans) | Functions as intended |
+| Silhouette Plot | View silhouette image | Silhouette plot renders with text explaining what silhouette scores mean and interpreting the 0.53 score | Functions as intended |
+| Cluster Distribution | View bar and line charts | Interactive Plotly bar chart shows cluster counts across salary bands. Line chart shows relative percentages per cluster | Functions as intended |
+| Features Defining Clusters | View feature importance image | Bar chart renders showing company_location and employee_residence as the dominant drivers | Functions as intended |
+| Cluster Profiles | View profile table and interpretation | Table displays per-cluster statistics. Text describes each cluster (Emerging-market, European-market, Established-market) | Functions as intended |
+| Limitations | Read limitations section | Warning explains weak cluster separation (0.53 silhouette) and lists alternative approaches explored | Functions as intended |
 
-PCA is linear — it can't capture non-linear structure. UMAP is better at preserving local cluster structure in the reduced space:
-
-
-from umap import UMAP
-reducer = UMAP(n_components=2, random_state=0)
-df_umap = reducer.fit_transform(df_scaled)
-Then visualise df_umap — if natural groupings exist in the data, UMAP will reveal them. If it still shows one blob, the data genuinely has no strong cluster structure.
-
-Option 3 — Change categorical encoding
-OrdinalEncoder with encoding_method='arbitrary' assigns random integers to categories. This creates false distance relationships (e.g. employment_type: FL=0, FT=1, CT=2 implies CT is "closer" to FT than FL is, which is meaningless). Try one-hot encoding instead:
-
-
-from feature_engine.encoding import OneHotEncoder
-This would increase dimensionality but removes the false ordinal assumption.
-
-Option 4 — Use Gower distance
-
-Your data is mixed type (categorical + numerical). Gower distance is specifically designed for this — it handles each feature type appropriately:
-
-
-pip install gower
-import gower
-distance_matrix = gower.gower_matrix(df)
-Then use AgglomerativeClustering with affinity='precomputed' on the distance matrix.
-**Most practical next step:**
-
-Try GMM first — it's the closest to KMeans (same pipeline structure, just replace the model) and handles overlapping clusters natively. If that still produces poor separation, try UMAP visualisation to establish whether natural clusters exist at all before investing further.
-
-
-Note:
-`remote_ratio` is retained in the list only to satisfy hypothesis validation requirements, not as a predictive feature.
-
-**Note on** `salary_local`: Although `salary_local` ranks highest in the Spearman correlation (0.888), it is excluded because it represents the same salary information as `salary_usd`, expressed in local currency. Its low Pearson correlation (0.134) is explained by currency scale differences (e.g., 25M JPY vs 100k USD), which distort the linear relationship but not the rank ordering. Including it would introduce data leakage rather than genuine predictive power.
-
-This is actually a good example of why both correlation methods are useful, and also why salary_local should be dropped — it's the same information as salary_usd, just distorted by currency conversion.
-
-
-Good question. The rule of thumb is: drop in data cleaning if the reason is about the data itself, defer if the reason is about the model.
-
-Data Cleaning drops (notebook 03)
-Drop if the column fails any of these checks — regardless of what model you'll use:
-
-Identifier — uniquely identifies rows, not a measurement (job_id)
-Direct leakage — encodes the target variable in a different form (salary_local, salary_currency)
-Not available at prediction time — wouldn't exist when making a real prediction (posting_date, application_deadline)
-Zero information — constant values, or truly meaningless numbers (job_description_length)
-These are always wrong to keep, no matter what model or encoding you choose.
-
-Modeling pipeline drops (notebook 05)
-Defer if the decision depends on your modeling approach:
-
-required_skills — you could parse it with NLP or multi-hot encoding. You chose not to, but someone else might. That's a modeling decision.
-
-company_name — you could use target encoding or group rare companies. It's not inherently useless, just impractical for your approach.
-
-industry — it could matter with a different dataset or target. You dropped it because H4 showed p=0.112. That's a statistical finding, not a data quality issue.
-
-years_experience — perfectly valid feature on its own. Only dropped because it's collinear with another feature you preferred.
-
-The test
-
-Ask yourself: "Would every data scientist drop this column, regardless of their modeling approach?"
-
-Yes → drop in data cleaning
-No, it depends → defer to modeling pipeline
+---
