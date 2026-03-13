@@ -13,16 +13,16 @@ def page_salary_study_body():
     st.write("# AI Salary Study")
 
     st.info(
-        "**Business Requirement 1** - The client wants to understand"
-        "how AI salaries correlate with job attributes such as "
-        "experience level, company size, location, and education."
+        "**Business Requirement 1** - The client wants to identify"
+        " which attributes correlate most closely with AI/ML salary levels."
+
     )
 
     df = load_data()
 
     if st.checkbox("Inspect Dataset"):
         st.write(
-            f"The dataset has {df.shape[0]} rows and {df.shape[1]} columns.\n\n"
+            f"The dataset has {df.shape[0]} rows and {df.shape[1]} columns.\n"
             f"Below are the first 10 rows."
         )
         st.write(df.head(10))
@@ -43,12 +43,12 @@ def page_salary_study_body():
     st.info("The salary distribution is right-skewed, "
             "with most salaries concentrated between $50k and $150k "
             "and a long tail extending beyond $400k. "
-            "The median salary (~$110k) is lower than the mean, "
+            "The median salary (~ $110k) is lower than the mean, "
             "reflecting a small number of high-paying executive roles "
             "that pull the average upward. For benchmarking purposes, "
             "the median is a more reliable measure of a typical AI salary.")
     if st.checkbox("Show Distribution of AI Salaries"):
-        fig, ax = plt.subplots(figsize=(8, 3))
+        fig, ax = plt.subplots(figsize=(6, 2.5))
         sns.histplot(data=df, x="salary_usd", bins=40, kde=True, ax=ax)
         ax.set_xlabel("Salary (USD)")
         ax.set_title("Distribution of AI Salaries")
@@ -115,7 +115,7 @@ def page_salary_study_body():
         r_pearson, _ = stats.pearsonr(
             df['years_experience'], df['salary_usd']
         )
-        fig, ax = plt.subplots(figsize=(8, 3.5))
+        fig, ax = plt.subplots(figsize=(5, 2.5))
         sns.regplot(data=df, x='years_experience', y='salary_usd',
                     scatter_kws={'alpha': 0.3, 's': 10},
                     line_kws={'color': 'red'}, ax=ax)
@@ -129,7 +129,7 @@ def page_salary_study_body():
         st.pyplot(fig, use_container_width=False)
 
     with tab_exp:
-        fig, ax = plt.subplots(figsize=(8, 3.5))
+        fig, ax = plt.subplots(figsize=(4, 3))
         exp_order = ["EN", "MI", "SE", "EX"]
         exp_labels = {
             "EN": "Entry", "MI": "Mid",
@@ -148,7 +148,7 @@ def page_salary_study_body():
         st.pyplot(fig, use_container_width=False)
 
     with tab_size:
-        fig, ax = plt.subplots(figsize=(8, 3.5))
+        fig, ax = plt.subplots(figsize=(4, 3))
         corr_size_labels = {"S": "Small", "M": "Medium", "L": "Large"}
         corr_df = df.copy()
         corr_df["size_label"] = corr_df["company_size"].map(corr_size_labels)
@@ -161,7 +161,7 @@ def page_salary_study_body():
         st.pyplot(fig, use_container_width=False)
 
     with tab_remote:
-        fig, ax = plt.subplots(figsize=(8, 3.5))
+        fig, ax = plt.subplots(figsize=(4, 3))
         sns.boxplot(data=df, x='remote_ratio', y='salary_usd',
                     order=[0, 50, 100], ax=ax)
         ax.set_title('Salary by Remote Ratio')
@@ -172,8 +172,7 @@ def page_salary_study_body():
 
     # --- Parallel Categories ---
     st.write("---")
-    st.write("## Parallel Categories:"
-            " Salary x Experience x Remote x Company Size")
+    st.write("## Parallel Categories Plot")
 
     salary_map = [-np.inf, 60000, 100000, 140000, np.inf]
     disc = ArbitraryDiscretiser(binning_dict={'salary_usd': salary_map})
@@ -192,7 +191,7 @@ def page_salary_study_body():
 
     fig = px.parallel_categories(
         df_parallel,
-        dimensions=['salary_usd', 'experience_level', 'remote_ratio', 
+        dimensions=['salary_usd', 'experience_level', 'remote_ratio',
                     'company_size'],
         color='salary_band',
         color_continuous_scale=[
@@ -203,7 +202,8 @@ def page_salary_study_body():
         ],
         width=950,
         height=500,
-        title="Parallel Categories: Salary x Experience x Remote x Company Size"
+        title="Parallel Categories: "
+              "Salary x Experience x Remote x Company Size"
     )
     fig.update_coloraxes(
         colorbar_title_text="Salary Band",

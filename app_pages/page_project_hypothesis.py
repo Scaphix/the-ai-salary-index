@@ -12,10 +12,9 @@ def page_project_hypothesis_body():
 
     st.write("# Project Hypothesis and Validation")
     st.info(
-        "The following hypotheses were formulated before the "
-        "analysis and validated using statistical tests "
-        "(Kruskal-Wallis, Spearman and Pearson correlation) "
-        "in the Job Market Study notebook."
+        "The following hypotheses were formulated after the "
+        "study of the dataset and validated using statistical tests "
+        "(Kruskal-Wallis, Spearman and Pearson correlation)."
     )
 
     # --- Hypothesis 1 ---
@@ -35,8 +34,8 @@ def page_project_hypothesis_body():
     )
     st.success(
         "**Verdict: Confirmed**\n\n"
-        "* `experience_level` is the strongest predictor of "
-        "`salary_usd`.\n"
+        "* **experience_level** is the strongest predictor of "
+        "**salary_usd**.\n"
         "* Senior (SE) and Executive (EX) roles dominate the "
         "high salary bands (>$140k), while Entry-level (EN) "
         "roles are concentrated in the lower bands.\n"
@@ -45,22 +44,16 @@ def page_project_hypothesis_body():
         "This makes it the primary feature for the regression "
         "model."
     )
-    st.write(
-        "**Recommended action:** Compensation benchmarking tools should use "
-        "experience level as the primary stratification "
-        "variable before comparing across "
-        "job titles or locations."
-    )
 
     if st.checkbox("Show Salary by Experience Level"):
-        fig, ax = plt.subplots(figsize=(10, 5))
+        fig, ax = plt.subplots(figsize=(5, 2.5))
         order = (df.groupby('experience_level')['salary_usd']
                  .median().sort_values(ascending=False).index)
         sns.boxplot(data=df, x='experience_level', y='salary_usd',
                     order=order, ax=ax)
         ax.set_title('Salary by Experience Level')
         plt.tight_layout()
-        st.pyplot(fig)
+        st.pyplot(fig, use_container_width=False)
 
     # --- Hypothesis 2 ---
     st.write("---")
@@ -76,13 +69,13 @@ def page_project_hypothesis_body():
     )
     st.info(
         "**Validation:** Spearman correlation between "
-        "remote_ratio and salary_usd. Kruskal-Wallis test "
+        "**remote_ratio** and **salary_usd**. Kruskal-Wallis test "
         "across the three remote-ratio groups."
     )
     st.error(
         "**Verdict: Rejected**\n\n"
-        "* `remote_ratio` has no meaningful impact on "
-        "`salary_usd`.\n"
+        "* **remote_ratio** has no meaningful impact on "
+        "**salary_usd**.\n"
         "* All salary bands flow evenly across on-site (0), "
         "hybrid (50), and fully remote (100) categories.\n"
         "* Median salary (~$110k) and interquartile range are "
@@ -92,13 +85,13 @@ def page_project_hypothesis_body():
     )
 
     if st.checkbox("Show Salary by Remote Ratio"):
-        fig, ax = plt.subplots(figsize=(10, 5))
+        fig, ax = plt.subplots(figsize=(5, 2.5))
         sns.boxplot(data=df, x='remote_ratio', y='salary_usd',
                     order=[0, 50, 100], ax=ax)
         ax.set_title('Salary by Remote Ratio')
         ax.set_xlabel('Remote Ratio (0=On-site, 50=Hybrid, 100=Remote)')
         plt.tight_layout()
-        st.pyplot(fig)
+        st.pyplot(fig, use_container_width=False)
 
     # --- Hypothesis 3 ---
     st.write("---")
@@ -118,8 +111,8 @@ def page_project_hypothesis_body():
     )
     st.success(
         "**Verdict: Confirmed**\n\n"
-        "* `years_experience` is positively correlated with "
-        "`salary_usd`.\n"
+        "* **years_experience** is positively correlated with "
+        "**salary_usd**.\n"
         "* This makes it the strongest purely numerical "
         "predictor in the dataset."
     )
@@ -127,7 +120,7 @@ def page_project_hypothesis_body():
     if st.checkbox("Show Salary vs Years of Experience"):
         from scipy import stats
         r_pearson, _ = stats.pearsonr(df['years_experience'], df['salary_usd'])
-        fig, ax = plt.subplots(figsize=(10, 5))
+        fig, ax = plt.subplots(figsize=(5, 2.5))
         sns.regplot(data=df, x='years_experience', y='salary_usd',
                     scatter_kws={'alpha': 0.3, 's': 10},
                     line_kws={'color': 'red'}, ax=ax)
@@ -138,7 +131,7 @@ def page_project_hypothesis_body():
         ax.set_xlabel('Years of Experience')
         ax.set_ylabel('Salary (USD)')
         plt.tight_layout()
-        st.pyplot(fig)
+        st.pyplot(fig, use_container_width=False)
 
     # --- Hypothesis 4 ---
     st.write("---")
@@ -158,8 +151,8 @@ def page_project_hypothesis_body():
     )
     st.success(
         "**Verdict: Confirmed**\n\n"
-        "* Median salary by company size: **S = $95k**, "
-        "**M = $105k**, **L = $122k** : a $27k gap between "
+        "* Median salary by company size: S = $95k, "
+        " M = $105k, L = $122k : a $27k gap between "
         "small and large companies.\n"
         "* Company size is a secondary predictor after "
         "experience level and years of experience.\n\n"
@@ -168,12 +161,12 @@ def page_project_hypothesis_body():
     )
 
     if st.checkbox("Show Salary by Company Size"):
-        fig, ax = plt.subplots(figsize=(8, 5))
+        fig, ax = plt.subplots(figsize=(4, 3))
         sns.boxplot(data=df, x='company_size', y='salary_usd',
                     order=['S', 'M', 'L'], ax=ax)
         ax.set_title('Salary by Company Size')
         plt.tight_layout()
-        st.pyplot(fig)
+        st.pyplot(fig, use_container_width=False)
 
     # --- Conclusion ---
     st.write("---")
@@ -191,7 +184,7 @@ def page_project_hypothesis_body():
         "has no meaningful impact on salary, suggesting that the "
         "AI job market has largely normalized remote pay.\n\n"
         "**Implication for modeling:** The regression model should "
-        "prioritize `experience_level`, `years_experience`, and "
-        "`company_size` as core features, while `remote_ratio` "
+        "prioritize **experience_level**, **years_experience**, and "
+        "**company_size** as core features, while **remote_ratio** "
         "can be safely excluded or deprioritized."
     )
