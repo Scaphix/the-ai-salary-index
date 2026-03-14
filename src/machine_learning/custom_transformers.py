@@ -18,7 +18,8 @@ class OrdinalMappingEncoder(BaseEstimator, TransformerMixin):
 
 
 class FrequencyEncoder(BaseEstimator, TransformerMixin):
-    """Replaces categorical values with their frequency (fitted on train only)."""
+    """Replaces categorical values with their frequency
+                    (fitted on train only)."""
 
     def __init__(self, variables):
         self.variables = variables
