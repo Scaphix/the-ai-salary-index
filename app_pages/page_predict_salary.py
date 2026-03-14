@@ -1,88 +1,51 @@
 import streamlit as st
 import pandas as pd
 from src.data_management import load_pkl_file
-from src.machine_learning.predictive_analysis import predict_salary
+from src.machine_learning.predictive_analysis import (
+    predict_salary, predict_cluster
+)
 
 
 def page_predict_salary_body():
     st.write("# Predict AI Salary")
 
     st.info(
-        "**Business Requirement 1** — The client wants to predict the expected "
-        "annual salary (USD) for a given AI job posting based on its attributes.\n\n"
-        "**Business Requirement 2** — Classify whether a given position is "
-        "**fairly compensated**, **overpaid**, or **underpaid** relative to "
-        "market expectations.\n\n"
-        "We combine salary prediction with residual-based market segmentation "
-        "to not only estimate what a role should pay, but also provide "
-        "actionable context on salary positioning.\n\n"
-        "**Success criterion:** R² ≥ 0.70 on both train and test sets."
+        "**Business Requirement 2** - The client wants to "
+        "predict the expected annual salary (USD) for a "
+        "given AI job posting based on its attributes.\n\n"
+        "**Business Requirement 3** - The client wants to segment AI job "
+        "postings into meaningful market clusters based on shared attributes, "
+        "so that each prediction is accompanied by a market segment profile."
     )
 
     version = "v1"
     path = f"outputs/ml_pipeline/predict_salary/{version}"
+    cluster_path = f"outputs/ml_pipeline/cluster_analysis/{version}"
 
     pipeline_dc_fe = load_pkl_file(
         f"{path}/pipeline_data_cleaning_feat_eng.pkl"
     )
     pipeline_model = load_pkl_file(f"{path}/pipeline_regressor.pkl")
+    pipeline_cluster = load_pkl_file(f"{cluster_path}/pipeline_cluster.pkl")
 
     # --- Pipeline overview ---
     st.write("---")
     st.write("## How the Model Works")
 
     st.success(
-        "The prediction is powered by two pipelines trained on over "
-        "**11,700 AI job postings**:"
+        "The prediction is powered by three pipelines "
+        "(cleaning + regressor + cluster) trained on over "
+        "**11,700 AI job postings**.\n\n"
+        "The system provides the following outputs:\n"
+        "1. A **predicted annual salary** in USD "
+        "based on the job attributes.\n"
+        "2. A **salary tier classification** "
+        "(top, above-average, mid-range, or lower end).\n"
+        "3. A **market segment assignment** from cluster analysis, describing "
+        "the typical profile for similar roles.\n"
+        "4. **Actionable career tips** tailored to the selected inputs.\n"
+        "5. A **margin of error** estimate based on the model's test MAE."
     )
-
-    st.info(
-        "### 1. Data Cleaning & Feature Engineering Pipeline\n"
-        "* Drops irrelevant columns (free-text fields, company names, "
-        "industry) and **years_experience** (Spearman ρ = 0.97 with "
-        "**experience_level** — nearly identical information).\n"
-        "* Encodes **experience_level**, **company_size**, and "
-        "**education_required** as ordinal numbers.\n"
-        "* Frequency-encodes **company_location** and **employee_residence**.\n"
-        "* One-hot encodes **employment_type** and **job_title**.\n\n"
-        "### 2. Regression Pipeline\n"
-        "* Scales features with StandardScaler.\n"
-        "* Predicts salary using a tuned **GradientBoostingRegressor** "
-        "(300 estimators, max depth 3, learning rate 0.2).\n"
-        "* Only the **4 most important features** (selected automatically "
-        "during training) are used for prediction: **experience_level**, "
-        "**company_location**, **employee_residence**, and **company_size**."
-    )
-
-    st.write("## Model Performance")
-
-    col_perf1, col_perf2 = st.columns(2)
-    with col_perf1:
-        st.metric("Train R²", "0.878")
-        st.metric("Train MAE", "$15,208")
-    with col_perf2:
-        st.metric("Test R²", "0.863")
-        st.metric("Test MAE", "$16,124")
-
-    st.success(
-        "The success criterion (R² ≥ 0.70) is met on both sets. "
-        "The small train/test gap (0.015) indicates the model generalises "
-        "well with no significant overfitting."
-    )
-
-    st.write("## Feature Importance")
-    st.info(
-        "**Most important predictor:** **experience_level** (H1) "
-        "the single most influential feature in the model, confirming "
-        "the hypothesis that experience level is the strongest salary driver.\n\n"
-        "* **experience_level** alone accounts for over 50% of the model's "
-        "predictive power.\n"
-        "* **company_location** and **employee_residence** are the next most "
-        "important features, reflecting the strong influence of location on"
-        " salary expectations."
-    )
-    if st.checkbox("Show Feature Importance Plot"):
-        st.image(f"{path}/feature_importance.png", width=800)
 
     # --- Live prediction ---
     st.write("---")
@@ -149,10 +112,18 @@ def page_predict_salary_body():
         prediction = predict_salary(live_data, pipeline_dc_fe, pipeline_model)
         salary = prediction[0]
 
-        _render_salary_insights(salary, experience_level, company_size)
+        cluster = predict_cluster(
+            pipeline_cluster, experience_level, company_location,
+            company_size, employee_residence,
+        )
+
+        _render_salary_insights(
+            salary, experience_level,
+            company_size, cluster
+        )
 
 
-def _render_salary_insights(salary, experience_level, company_size):
+def _render_salary_insights(salary, experience_level, company_size, cluster):
     """Show contextual insights after a prediction is made."""
 
     st.write("---")
@@ -188,51 +159,31 @@ def _render_salary_insights(salary, experience_level, company_size):
     st.info(
         f"**Predicted salary: ${salary:,.0f} USD/year**\n\n"
         f"{tier_detail}"
+
     )
 
-    # --- Market Segment Context (BR2) ---
-    st.write("### Market Positioning")
-
-    mae = 16_124
-    fair_low = salary - mae
-    fair_high = salary + mae
-
-    st.success(
-        f"Based on your profile, the expected **fair market "
-        f"salary** is **${salary:,.0f}**. This is what the model "
-        f"considers appropriate given your experience level, "
-        f"location, and company size.\n\n"
-        f"People with similar profiles tend to fall into one of "
-        f"three market segments:"
-    )
-
-    col_f, col_o, col_u = st.columns(3)
-    with col_f:
-        st.metric("Fair", f"${fair_low:,.0f}–${fair_high:,.0f}")
-        st.caption(
-            "Salary within ±$16k of the prediction. "
-            "Compensation aligns with market expectations."
-        )
-    with col_o:
-        st.metric("Overpaid", f"> ${fair_high:,.0f}")
-        st.caption(
-            "Salary significantly above prediction. May "
-            "reflect niche skills, strong negotiation, "
-            "or equity compensation."
-        )
-    with col_u:
-        st.metric("Underpaid", f"< ${fair_low:,.0f}")
-        st.caption(
-            "Salary below market expectation. May signal "
-            "retention risk or room for negotiation."
-        )
+    # Market segment from cluster analysis
+    cluster_descriptions = {
+        0: ("The India Segment (~4%)",
+            "India-centric roles. Salary band is 93% Low. "
+            "Geography remains the strongest penalty — when employee "
+            "and company are both in India, salaries are almost always "
+            "low regardless of experience level."),
+        1: ("Senior Professionals (~48%)",
+            "7-15 years experience, SE/EX level. Distributed across "
+            "developed markets. Salary is 66% High, 30% Mid. "
+            "Experience drives these professionals into premium pay."),
+        2: ("Junior/Entry (~48%)",
+            "1-3 years experience, MI/EN level. Also in developed "
+            "markets. Salary is 57% low, 40% Mid. Early-career "
+            "professionals earning less, as expected."),
+    }
+    segment_name, segment_desc = cluster_descriptions.get(
+        cluster, ("Unknown Segment", ""))
 
     st.info(
-        "**How to use this:** If you receive an offer for this "
-        "type of role, compare it against the predicted salary. "
-        "An offer within the **Fair** range is market-aligned. "
-        "Offers outside that range may warrant further "
-        "investigation or negotiation."
+        f"**Cluster {cluster}: {segment_name}** \n\n"
+        f"{segment_desc}"
     )
 
     # Actionable advice
@@ -240,7 +191,7 @@ def _render_salary_insights(salary, experience_level, company_size):
     if experience_level in ("EN", "MI"):
         tips.append(
             "Moving from entry/mid-level to senior typically "
-            "results in a significant salary jump — experience "
+            "results in a significant salary jump, experience "
             "level is the strongest predictor in the model."
         )
     if company_size == "S":
@@ -258,7 +209,7 @@ def _render_salary_insights(salary, experience_level, company_size):
 
     tips.append(
         "Company and employee location strongly influence "
-        "salary. Roles based in the US, Switzerland, or "
+        "salary. Roles based in Switzerland, the US, or "
         "Norway tend to pay the most."
     )
 
