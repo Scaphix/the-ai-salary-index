@@ -1,4 +1,4 @@
-,employee_residence,SalaryBand,Cluster
-0,"'Romania': 4% , 'Argentina': 4% , 'Vietnam': 4% ","'Mid': 34% , 'Low': 33% , 'High': 32% ",0.0
-0,"'Germany': 11% , 'Netherlands': 11% , 'Austria': 11% ","'Low': 34% , 'Mid': 33% , 'High': 33% ",1.0
-0,"'Ireland': 9% , 'Canada': 9% , 'France': 9% ","'Mid': 35% , 'High': 33% , 'Low': 32% ",2.0
+experience_level,years_experience,company_location,SalaryBand,Cluster
+"'MI': 31% , 'EX': 30% , 'SE': 29% ",3.0 -- 11.0,'India': 100% ,"'Low': 93% , 'Mid': 7% ",0.0
+"'SE': 50% , 'EX': 50% ",7.0 -- 15.0,"'Israel': 6% , 'Germany': 6% , 'Singapore': 6% ","'High': 66% , 'Mid': 30% , 'Low': 4% ",1.0
+"'MI': 51% , 'EN': 49% ",1.0 -- 3.0,"'Switzerland': 6% , 'United States': 6% , 'United Kingdom': 6% ","'Low': 57% , 'Mid': 40% , 'High': 3% ",2.0
