@@ -2,30 +2,26 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import plotly.express as px
+from src.data_management import load_pkl_file
 
 
 def page_cluster_body():
 
     version = "v1"
-    cluster_silhouette = plt.imread(
-        f"outputs/ml_pipeline/cluster_analysis/{version}/clusters_silhouette.png")
-    features_to_cluster = plt.imread(
-        f"outputs/ml_pipeline/cluster_analysis/{version}/features_define_cluster.png")
-    cluster_profile = pd.read_csv(
-        f"outputs/ml_pipeline/cluster_analysis/{version}/clusters_profile.csv")
-    cluster_features = (
-        pd.read_csv(
-            f"outputs/ml_pipeline/cluster_analysis/{version}/TrainSet.csv")
-        .columns
-        .to_list()
-    )
+    path = f"outputs/ml_pipeline/cluster_analysis/{version}"
 
-    # dataframe for cluster_distribution_per_variable()
-    df_train = pd.read_csv(
-        f"outputs/ml_pipeline/cluster_analysis/{version}/TrainSet.csv")
+    pipeline_cluster = load_pkl_file(f"{path}/pipeline_cluster.pkl")
+    cluster_silhouette = plt.imread(f"{path}/clusters_silhouette.png")
+    features_to_cluster = plt.imread(f"{path}/features_define_cluster.png")
+    cluster_profile = pd.read_csv(f"{path}/clusters_profile.csv")
+
+    df_train = pd.read_csv(f"{path}/TrainSet.csv")
+    cluster_features = df_train.columns.to_list()
+
+    # Use the saved pipeline's labels instead of re-fitting
     df_salary_band = _load_salary_band()
     df_salary_vs_clusters = df_salary_band.copy()
-    df_salary_vs_clusters["Clusters"] = _assign_cluster_labels(df_train)
+    df_salary_vs_clusters["Clusters"] = pipeline_cluster["model"].labels_
 
     st.write("### ML Pipeline: Cluster Analysis")
     st.info(
@@ -45,11 +41,9 @@ def page_cluster_body():
         "2. **OneHotEncoder** — encodes employment_type\n"
         "3. **FrequencyEncoder** — encodes job_title, company_location, "
         "employee_residence, industry\n"
-        "4. **SmartCorrelatedSelection** — removes correlated features "
-        "(Spearman ρ > 0.8)\n"
-        "5. **StandardScaler** — scales all features\n"
-        "6. **PCA** — reduces to 6 components\n"
-        "7. **KMeans** — 3 clusters"
+        "4. **StandardScaler** — scales all features\n"
+        "5. **PCA** — keeps 95% of variance (auto-selects components)\n"
+        "6. **KMeans** — 3 clusters"
     )
 
     st.write("#### The features the model was trained with")
@@ -58,12 +52,16 @@ def page_cluster_body():
     st.write("#### Clusters Silhouette Plot")
     st.image(cluster_silhouette)
     st.info(
-        "The silhouette plot measures how similar each data point is to its own "
-        "cluster compared to neighbouring clusters. Values range from -1 (wrong "
-        "cluster) to +1 (well-matched). The average silhouette score of **0.53** "
-        "indicates moderate cluster structure — the clusters capture some real "
-        "differences in the data, but there is notable overlap between segments. "
-        "This is expected given the continuous nature of salary and location data."
+        "The silhouette plot measures how similar each "
+        "data point is to its own cluster compared to "
+        "neighbouring clusters. Values range from -1 "
+        "(wrong cluster) to +1 (well-matched). The "
+        "average silhouette score of **0.53** indicates "
+        "moderate cluster structure — the clusters "
+        "capture some real differences in the data, but "
+        "there is notable overlap between segments. "
+        "This is expected given the continuous nature "
+        "of salary and location data."
     )
 
     cluster_distribution_per_variable(
@@ -72,41 +70,40 @@ def page_cluster_body():
     st.write("#### Most important features to define a cluster")
     st.image(features_to_cluster)
     st.info(
-        "This chart shows which features have the greatest influence on cluster "
-        "assignment. **Company location** and **employee residence** are the "
-        "dominant drivers, confirming that the clusters primarily segment "
-        "professionals by geographic market rather than by job role or seniority."
+        "This chart shows which features have the "
+        "greatest influence on cluster assignment. "
+        "**Company location** and **employee "
+        "residence** are the dominant drivers, "
+        "confirming that the clusters primarily "
+        "segment professionals by geographic market "
+        "rather than by job role or seniority."
     )
 
     st.write("#### Cluster Profile")
     statement = (
-        "* Historically, **Cluster 0** contains professionals from smaller "
-        "markets (Romania, Argentina, Vietnam) with a **balanced salary "
-        "distribution** across Low, Mid and High bands.\n"
-        "* **Cluster 1** groups professionals from European markets "
-        "(Germany, Netherlands, Austria) with a slight lean towards "
-        "**lower salaries**.\n"
-        "* **Cluster 2** groups professionals from markets like Ireland, "
-        "Canada, and France with a slight lean towards **mid-to-high "
-        "salaries**.\n"
+        "* **Cluster 0 (The India Segment — ~4%):** India-centric roles. "
+        "Salary band is 93% Low. Geography remains the strongest "
+        "penalty — when employee and company are both in India, salaries "
+        "are almost always low regardless of experience level.\n"
+        "* **Cluster 1 (Senior Professionals — ~48%):** 7-15 years "
+        "experience, SE/EX level. Distributed across developed markets. "
+        "Salary is 66% High, 30% Mid. Experience drives these "
+        "professionals into premium pay.\n"
+        "* **Cluster 2 (Junior/Entry — ~48%):** 1-3 years experience, "
+        "MI/EN level. Also in developed markets. Salary is 57% Low, "
+        "40% Mid. Early-career professionals earning less, as expected.\n"
         "* **One potential action:** when evaluating a job offer, compare "
         "the offered salary against the typical band for your cluster. "
-        "If the offer falls in the Low band for a Cluster 2 profile, "
+        "If the offer falls in the Low band for a Cluster 1 profile, "
         "there may be room for negotiation."
     )
     st.info(statement)
 
-    statement = (
-        "* The cluster profile interpretation allowed us to label the "
-        "clusters as follows:\n"
-        "* **Cluster 0** — Emerging-market AI professionals with balanced "
-        "salary spread.\n"
-        "* **Cluster 1** — European-market AI professionals, slightly "
-        "lower-paid.\n"
-        "* **Cluster 2** — Established-market AI professionals, slightly "
-        "higher-paid."
+    st.success(
+        "**Key insight:** PCA revealed that experience "
+        "(PC1 = 48% of variance) is the dominant axis, while geography "
+        "(PC2-PC3) creates the secondary separation."
     )
-    st.success(statement)
 
     # hide index in st.table()
     cluster_profile.index = [" "] * len(cluster_profile)
@@ -142,17 +139,6 @@ def _load_salary_band():
         labels=["Low", "Mid", "High"],
     ).astype("object")
     return df[["SalaryBand"]]
-
-
-def _assign_cluster_labels(df_train):
-    """Re-fit KMeans on the saved TrainSet to get cluster labels."""
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.cluster import KMeans
-
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(df_train)
-    km = KMeans(n_clusters=3, random_state=0)
-    return km.fit_predict(X_scaled)
 
 
 def cluster_distribution_per_variable(df, target):
