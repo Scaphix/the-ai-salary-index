@@ -61,10 +61,10 @@ To better understand the factors influencing salary levels in the AI/ML job mark
 
 | Hypothesis | Rationale | Validation |
 |------------|------------|-------------|
-| **H1:** Higher `experience_level` is associated with higher `salary_usd` | Candidates with more experience (Entry → Executive) should command higher compensation | Visualize salary distribution by experience level, conduct ANOVA or regression analysis to confirm positive correlation |
+| **H1:** `experience_level` is the Dominant Salary Driver | Candidates with more experience (Entry → Executive) should command higher compensation | Visualize salary distribution by experience level, conduct ANOVA or regression analysis to confirm positive correlation |
 | **H2:** Remote roles (`remote_ratio` = 100) have different salary expectations than hybrid/on-site roles | Geographic flexibility may impact salary—either premium for remote or discount based on cost-of-living | Visualize salary distribution by remote_ratio categories, conduct hypothesis test for salary difference |
 | **H3:** `years_experience` required is positively correlated with `salary_usd` | Roles demanding more years of experience should offer higher compensation to attract experienced talent | Scatter plot with regression line, calculate correlation coefficient to confirm strength of relationship |
-| **H4:** Job category (`job_category`) influences salary levels | Different AI/ML domains (e.g., Data Science vs. ML Engineering) may have distinct salary markets | Analyze mean salary by job_category, perform Kruskal-Wallis test for differences across categories |
+| **H4:** Company size (`company_size`) is a significant salary driver | Large companies pay significantly higher salaries than small and medium-sized companies, reflecting greater revenue, bigger budgets, and competitive hiring pressure | Kruskal-Wallis H-test across the three company size groups (S, M, L), compare mean and median salary per group, boxplot comparison |
 
 These hypotheses will be tested through exploratory data analysis and statistical testing to identify whether the respective features are influential predictors of salary in the AI/ML market.
 
@@ -322,3 +322,98 @@ It consists of five main pages, each mapped to specific business requirements.
 | Limitations | Read limitations section | Warning explains weak cluster separation (0.53 silhouette) and lists alternative approaches explored | Functions as intended |
 
 ---
+### Validation
+All code in the Notebooks, `app_pages` and `src` directories was validated as conforming to PEP8 standards.
+
+### Automated Unit Tests
+No automated unit tests have been carried out at this time.
+
+
+## Unfixed Bugs
+* At the time of writing, there are no unfixed bugs within the project.
+
+
+## Deployment
+
+### Heroku
+
+The project was deployed to Heroku using the following steps:
+
+1. Within your working directory, ensure there is a `setup.sh` file containing the following:
+```
+mkdir -p ~/.streamlit/
+echo "\
+[server]\n\
+headless = true\n\
+port = $PORT\n\
+enableCORS = false\n\
+\n\
+" > ~/.streamlit/config.toml
+```
+2. Within your working directory, ensure there is a `runtime.txt` file containing a [Heroku-20](https://devcenter.heroku.com/articles/python-support#supported-runtimes) stack supported version of Python.
+```
+python-3.13.2
+```
+3. Within your working directory, ensure there is a `Procfile` containing the following:
+```
+web: sh setup.sh && streamlit run app.py
+```
+4. Ensure your `requirements.txt` file contains all the packages necessary to run the Streamlit dashboard.
+5. Update your `.gitignore` and `.slugignore` files with any files/directories that you do not want uploading to GitHub or are unnecessary for deployment.
+6. Log in to [Heroku](https://id.heroku.com/login) or create an account if you do not already have one.
+7. Click the **New** button on the dashboard and from the dropdown menu select "Create new app".
+8. Enter a suitable app name and select your region, then click the **Create app** button.
+9. Once the app has been created, navigate to the Deploy tab.
+10. At the Deploy tab, in the Deployment method section select **GitHub**.
+11. Enter your repository name and click **Search**. Once it is found, click **Connect**.
+12. Navigate to the bottom of the Deploy page to the Manual deploy section and select **main** from the branch dropdown menu.
+13. Click the **Deploy Branch** button to begin deployment.
+14. The deployment process should happen smoothly if all deployment files are fully functional. Click the button **Open App** at the top of the page to access your App.
+15. If the build fails, check the build log carefully to troubleshoot what went wrong.
+
+
+## Forking and Cloning
+
+If you wish to fork or clone this repository, please follow the instructions below:
+
+### Forking
+1. In the top right of the main repository page, click the **Fork** button.
+2. Under **Owner**, select the desired owner from the dropdown menu.
+3. **OPTIONAL:** Change the default name of the repository in order to distinguish it.
+4. **OPTIONAL:** In the **Description** field, enter a description for the forked repository.
+5. Ensure the 'Copy the main branch only' checkbox is selected.
+6. Click the **Create fork** button.
+
+### Cloning
+1. On the main repository page, click the **Code** button.
+2. Copy the HTTPS URL from the resulting dropdown menu.
+3. In your IDE terminal, navigate to the directory you want the cloned repository to be created.
+4. In your IDE terminal, type `git clone` and paste the copied URL.
+5. Hit Enter to create the cloned repository.
+
+### Installing Requirements
+In order to ensure all the correct dependencies are installed in your local environment, run the following command in the terminal:
+
+    pip install -r requirements.txt
+
+
+## Credits
+
+### Content
+
+#### Jupyter Notebooks
+* The code was adapted from the Code Institute "Churnometer" walkthrough project.
+
+
+#### Streamlit Dashboard
+* The multi-page navigation structure was adapted from the Code Institute "Data Analysis & Machine Learning Toolkit" Streamlit lessons.
+
+#### Dataset
+* The dataset used in this project is sourced from Kaggle: [Global AI Job Market & Salary Trends 2025](https://www.kaggle.com/datasets/bismasajjad/global-ai-job-market-and-salary-trends-2025) by Bisma Sajjad.
+
+
+## Acknowledgements
+* Thanks to my mentor for their support and guidance on the execution of the project.
+* Thanks to the Code Institute for providing the walkthrough projects and learning materials that formed the foundation of this work.
+
+[Back to top](#the-ai-salary-index)
