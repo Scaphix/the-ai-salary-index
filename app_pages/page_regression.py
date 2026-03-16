@@ -72,7 +72,7 @@ def page_regression_body():
 
     # --- Model Evaluation ---
     st.write("---")
-    st.write("## Model Persformance")
+    st.write("## Model Performance")
 
     y_train_pred = pipeline_model.predict(X_train)
     y_test_pred = pipeline_model.predict(X_test)
