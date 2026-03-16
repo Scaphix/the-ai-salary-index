@@ -73,6 +73,22 @@ def page_summary_body():
         "with cluster profiles and distribution charts (BR3)"
     )
 
+    st.write("## How to Use This Dashboard")
+
+    st.info(
+        "1. Use the **sidebar** on the left to navigate between "
+        "pages.\n"
+        "2. Expand **checkboxes** (e.g. *Inspect Dataset*) to "
+        "reveal additional tables and visualisations.\n"
+        "3. Switch between **tabs** to compare different plots "
+        "within a section.\n"
+        "4. On the **Predict Salary** page, select a candidate "
+        "profile from the dropdowns and click **Predict Salary** "
+        "to get an estimate.\n"
+        "5. All plots include a short caption explaining what to "
+        "look for."
+    )
+
     st.write(
         "For additional information, please visit and **read** the "
         "[Project README file]"
