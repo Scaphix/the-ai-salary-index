@@ -53,6 +53,11 @@ def page_salary_study_body():
         ax.set_xlabel("Salary (USD)")
         ax.set_title("Distribution of AI Salaries")
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "Look for the peak and long right tail, most AI salaries "
+            "fall between $50k and $150k, but a few executive roles "
+            "push well beyond $400k."
+        )
 
     # --- Salary by Location ---
     st.write("---")
@@ -75,6 +80,10 @@ def page_salary_study_body():
         ax.invert_yaxis()
         plt.tight_layout()
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "Countries are ranked by median salary: Compare bar "
+            "lengths to see which company locations pay the most."
+        )
 
     with loc_right:
         st.write("#### By Employee Residence")
@@ -87,6 +96,10 @@ def page_salary_study_body():
         ax.invert_yaxis()
         plt.tight_layout()
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "Compare with the company location chart: Differences "
+            "highlight where employees live vs. where companies are based."
+        )
 
     # --- Correlation Study ---
     st.write("---")
@@ -127,6 +140,10 @@ def page_salary_study_body():
         ax.set_ylabel('Salary (USD)')
         plt.tight_layout()
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "The red line shows the trend: A steeper slope means "
+            "each extra year of experience adds more salary."
+        )
 
     with tab_exp:
         fig, ax = plt.subplots(figsize=(4, 3))
@@ -146,6 +163,10 @@ def page_salary_study_body():
         ax.set_title("Salary by Experience Level")
         plt.tight_layout()
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "Compare the box heights and medians: A clear staircase "
+            "from Entry to Executive confirms experience drives salary."
+        )
 
     with tab_size:
         fig, ax = plt.subplots(figsize=(4, 3))
@@ -159,6 +180,10 @@ def page_salary_study_body():
         ax.set_title("Salary by Company Size")
         plt.tight_layout()
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "Look for differences in median lines: Larger companies "
+            "tend to pay more, but the overlap is substantial."
+        )
 
     with tab_remote:
         fig, ax = plt.subplots(figsize=(4, 3))
@@ -169,6 +194,10 @@ def page_salary_study_body():
         ax.set_ylabel('Salary (USD)')
         plt.tight_layout()
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "Nearly identical boxes confirm that remote, hybrid, and "
+            "on-site roles pay about the same in AI."
+        )
 
     # --- Parallel Categories ---
     st.write("---")
@@ -212,6 +241,10 @@ def page_salary_study_body():
     )
 
     st.plotly_chart(fig, use_container_width=True)
+    st.caption(
+        "Hover over ribbons to trace how salary bands connect to "
+        "experience, remote ratio, and company size."
+    )
 
     st.info(
         "**How to read this plot:** Each vertical axis represents a "

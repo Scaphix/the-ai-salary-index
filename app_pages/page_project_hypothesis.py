@@ -54,6 +54,10 @@ def page_project_hypothesis_body():
         ax.set_title('Salary by Experience Level')
         plt.tight_layout()
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "Notice the rising medians from Entry to Executive: The "
+            "gap between EN and EX is the largest salary jump."
+        )
 
     # --- Hypothesis 2 ---
     st.write("---")
@@ -92,6 +96,10 @@ def page_project_hypothesis_body():
         ax.set_xlabel('Remote Ratio (0=On-site, 50=Hybrid, 100=Remote)')
         plt.tight_layout()
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "The three boxes are nearly identical: No meaningful "
+            "salary difference between on-site, hybrid, and remote."
+        )
 
     # --- Hypothesis 3 ---
     st.write("---")
@@ -132,6 +140,10 @@ def page_project_hypothesis_body():
         ax.set_ylabel('Salary (USD)')
         plt.tight_layout()
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "The upward-sloping red line and positive Pearson r "
+            "confirm that more experience correlates with higher pay."
+        )
 
     # --- Hypothesis 4 ---
     st.write("---")
@@ -167,6 +179,10 @@ def page_project_hypothesis_body():
         ax.set_title('Salary by Company Size')
         plt.tight_layout()
         st.pyplot(fig, use_container_width=False)
+        st.caption(
+            "Compare the median lines across S, M, and L. Large "
+            "companies pay noticeably more than small ones."
+        )
 
     # --- Conclusion ---
     st.write("---")

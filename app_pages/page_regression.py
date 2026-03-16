@@ -11,8 +11,9 @@ def page_regression_body():
     st.write("# ML Regression Model Performance")
 
     st.info(
-        "**Business Requirement 2** — Predict the expected annual salary "
+        "**Business Requirement 2**: Predict the expected annual salary "
         "(USD) for a given AI job posting based on its attributes.\n\n"
+        "**Model**: GradientBoostingRegressor.\n\n"
     )
 
     version = "v1"
@@ -30,7 +31,7 @@ def page_regression_body():
     st.write("## ML Pipeline Steps")
     st.write("**The salary prediction pipeline consists of two stages:**")
     st.info(
-        "### Stage 1 — Data Cleaning & Feature Engineering\n"
+        "### Stage 1: Data Cleaning & Feature Engineering\n"
         "* Drops irrelevant columns (free-text fields, company names, "
         "industry) and **years_experience** (Spearman ρ = 0.97 with "
         "**experience_level** — nearly identical information).\n"
@@ -39,7 +40,7 @@ def page_regression_body():
         "* Frequency-encodes **company_location** and "
         " **employee_residence**.\n"
         "* One-hot encodes **employment_type** and **job_title**.\n\n"
-        "### Stage 2 — Regression Model\n\n"
+        "### Stage 2: Regression Model\n\n"
         "* Scales features with StandardScaler.\n"
         "* Predicts salary using a tuned **GradientBoostingRegressor** "
         "(300 estimators, max depth 3, learning rate 0.2).\n"
@@ -138,6 +139,11 @@ def page_regression_body():
 
         plt.tight_layout()
         st.pyplot(fig)
+        st.caption(
+            "Points should scatter evenly around the red zero line, "
+            "any funnel shape would indicate the model struggles at "
+            "certain salary ranges."
+        )
 
         st.info(
             "Residuals are centred around zero on both sets, indicating "
@@ -165,6 +171,11 @@ def page_regression_body():
 
         plt.tight_layout()
         st.pyplot(fig)
+        st.caption(
+            "The red dashed line represents perfect prediction. "
+            "Compare how tightly the point cloud follows it on "
+            "train vs. test to check for overfitting."
+        )
 
         st.info(
             "Points closely follow the diagonal line on both sets, "

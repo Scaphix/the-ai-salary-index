@@ -23,43 +23,51 @@ def page_cluster_body():
     df_salary_vs_clusters = df_salary_band.copy()
     df_salary_vs_clusters["Clusters"] = pipeline_cluster["model"].labels_
 
-    st.write("### ML Pipeline: Cluster Analysis")
+    st.write("# ML Cluster Model Performance")
     st.info(
-        "* We refitted the cluster pipeline using fewer variables, and it "
-        "delivered equivalent performance to the pipeline fitted using all "
-        "variables.\n"
-        "* The pipeline average silhouette score is **0.53**, indicating "
+        "**Business Requirement 3**: The client wants to segment AI job "
+        "postings into meaningful market clusters based on shared "
+        "attributes, to reveal distinct salary segments and labour "
+        "market patterns.\n\n"
+        "**Model**: KMeans Clustering with PCA. PCA is applied "
+        "beforehand to reduce dimensionality and balance feature "
+        "contributions.\n\n"
+        "* The pipeline average silhouette score is **0.12**, indicating "
         "**weak cluster structure** with significant overlap between groups."
+
     )
     st.write("---")
 
-    st.write("#### Cluster ML Pipeline steps")
+    st.write("## Cluster ML Pipeline steps")
     st.write(
         "The pipeline uses the following steps:\n"
-        "1. **OrdinalMappingEncoder** — encodes experience_level, "
+        "1. **OrdinalMappingEncoder** encodes experience_level, "
         "education_required, company_size\n"
-        "2. **OneHotEncoder** — encodes employment_type\n"
-        "3. **FrequencyEncoder** — encodes job_title, company_location, "
+        "2. **OneHotEncoder** encodes employment_type\n"
+        "3. **FrequencyEncoder** encodes job_title, company_location, "
         "employee_residence, industry\n"
-        "4. **StandardScaler** — scales all features\n"
-        "5. **PCA** — keeps 95% of variance (auto-selects components)\n"
-        "6. **KMeans** — 3 clusters"
+        "4. **StandardScaler** scales all features\n"
+        "5. **PCA:** keeps 95% of variance (auto-selects components)\n"
+        "6. **KMeans:**  3 clusters"
     )
 
-    st.write("#### The features the model was trained with")
+    st.write("## The features the model was trained with")
     st.write(cluster_features)
 
-    st.write("#### Clusters Silhouette Plot")
+    st.write("---")
+
+    st.write("## Model Performance & Cluster Interpretation")
+    st.write("### Clusters Silhouette Plot")
     st.image(cluster_silhouette)
     st.info(
         "The silhouette plot measures how similar each "
         "data point is to its own cluster compared to "
         "neighbouring clusters. Values range from -1 "
         "(wrong cluster) to +1 (well-matched). The "
-        "average silhouette score of **0.53** indicates "
-        "moderate cluster structure — the clusters "
-        "capture some real differences in the data, but "
-        "there is notable overlap between segments. "
+        "average silhouette score of **0.12** indicates "
+        "weak cluster structure. The clusters "
+        "capture some differences in the data, but "
+        "there is significant overlap between segments. "
         "This is expected given the continuous nature "
         "of salary and location data."
     )
@@ -67,29 +75,28 @@ def page_cluster_body():
     cluster_distribution_per_variable(
         df=df_salary_vs_clusters, target="SalaryBand")
 
-    st.write("#### Most important features to define a cluster")
+    st.write("## Feature Importance")
     st.image(features_to_cluster)
     st.info(
         "This chart shows which features have the "
         "greatest influence on cluster assignment. "
-        "**Company location** and **employee "
-        "residence** are the dominant drivers, "
+        "**experience_level** and **years_experience** "
+        "are the dominant drivers, followed by **company_location** "
         "confirming that the clusters primarily "
-        "segment professionals by geographic market "
-        "rather than by job role or seniority."
+        "segment professionals by seniority and geographic market. "
     )
 
-    st.write("#### Cluster Profile")
+    st.write("## Cluster Profile")
     statement = (
-        "* **Cluster 0 (The India Segment — ~4%):** India-centric roles. "
+        "* **Cluster 0 (The India Segment ~4%):** India-centric roles. "
         "Salary band is 93% Low. Geography remains the strongest "
-        "penalty — when employee and company are both in India, salaries "
+        "penalty, when employee and company are both in India, salaries "
         "are almost always low regardless of experience level.\n"
-        "* **Cluster 1 (Senior Professionals — ~48%):** 7-15 years "
+        "* **Cluster 1 (Senior Professionals ~48%):** 7-15 years "
         "experience, SE/EX level. Distributed across developed markets. "
         "Salary is 66% High, 30% Mid. Experience drives these "
         "professionals into premium pay.\n"
-        "* **Cluster 2 (Junior/Entry — ~48%):** 1-3 years experience, "
+        "* **Cluster 2 (Junior/Entry ~48%):** 1-3 years experience, "
         "MI/EN level. Also in developed markets. Salary is 57% Low, "
         "40% Mid. Early-career professionals earning less, as expected.\n"
         "* **One potential action:** when evaluating a job offer, compare "
@@ -110,10 +117,10 @@ def page_cluster_body():
     st.table(cluster_profile)
 
     st.write("---")
-    st.write("#### Limitations & Next Steps")
+    st.write("## Limitations & Next Steps")
     st.warning(
-        "The silhouette score of **0.53** indicates weak cluster separation. "
-        "The AI salary dataset is **continuously distributed** — salary is "
+        "The silhouette score of **0.12** indicates weak cluster separation. "
+        "The AI salary dataset is **continuously distributed**, salary is "
         "driven by a smooth gradient of experience, location, and company "
         "size rather than discrete segments.\n\n"
         "**Alternative approaches** (residual clustering, UMAP + HDBSCAN, "
@@ -156,6 +163,10 @@ def cluster_distribution_per_variable(df, target):
     fig.update_layout(xaxis=dict(tickmode="array",
                       tickvals=df["Clusters"].unique()))
     st.plotly_chart(fig)
+    st.caption(
+        "Compare bar heights across clusters: taller bars in a "
+        "salary band show where that segment is concentrated."
+    )
 
     df_relative = (
         df
@@ -176,3 +187,7 @@ def cluster_distribution_per_variable(df, target):
                       tickvals=df["Clusters"].unique()))
     fig.update_traces(mode="markers+lines")
     st.plotly_chart(fig)
+    st.caption(
+        "Lines crossing mean the salary-band mix shifts between "
+        "clusters: look for which band dominates each cluster."
+    )
