@@ -1,4 +1,5 @@
-experience_level,years_experience,company_location,SalaryBand,Cluster
-"'MI': 31% , 'EX': 30% , 'SE': 29% ",3.0 -- 11.0,'India': 100% ,"'Low': 93% , 'Mid': 7% ",0.0
-"'SE': 50% , 'EX': 50% ",7.0 -- 15.0,"'Israel': 6% , 'Germany': 6% , 'Singapore': 6% ","'High': 66% , 'Mid': 30% , 'Low': 4% ",1.0
-"'MI': 51% , 'EN': 49% ",1.0 -- 3.0,"'Switzerland': 6% , 'United States': 6% , 'United Kingdom': 6% ","'Low': 57% , 'Mid': 40% , 'High': 3% ",2.0
+employee_residence,experience_level,years_experience,company_location,SalaryBand,Cluster
+"'India': 74% , 'Argentina': 2% , 'Kenya': 1% ","'MI': 31% , 'EX': 30% , 'SE': 29% ",3.0 -- 11.0,'India': 100% ,"'Low': 93% , 'Mid': 7% ",0.0
+"'Ireland': 6% , 'Switzerland': 6% , 'France': 6% ","'MI': 51% , 'EN': 49% ",1.0 -- 3.0,"'Switzerland': 6% , 'Canada': 6% , 'France': 6% ","'Low': 57% , 'Mid': 41% , 'High': 2% ",1.0
+"'China': 6% , 'Singapore': 5% , 'Germany': 5% ","'SE': 50% , 'EX': 50% ",7.0 -- 15.0,"'Singapore': 6% , 'Israel': 6% , 'Germany': 6% ","'High': 66% , 'Mid': 30% , 'Low': 4% ",2.0
+"'Romania': 4% , 'Vietnam': 4% , 'Indonesia': 4% ","'MI': 26% , 'SE': 25% , 'EN': 25% ",2.0 -- 9.0,"'South Korea': 6% , 'United States': 6% , 'Sweden': 6% ","'Mid': 35% , 'High': 34% , 'Low': 31% ",3.0
