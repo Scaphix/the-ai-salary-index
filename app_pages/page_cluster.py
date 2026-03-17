@@ -32,9 +32,10 @@ def page_cluster_body():
         "**Model**: KMeans Clustering with PCA. PCA is applied "
         "beforehand to reduce dimensionality and balance feature "
         "contributions.\n\n"
-        "* The pipeline average silhouette score is **0.12**, indicating "
-        "**weak cluster structure** with significant overlap between groups."
-
+        "* The pipeline average silhouette score is **0.16**, indicating "
+        "**modest cluster structure**. While the score is modest, the "
+        "resulting 4-cluster solution produces highly interpretable "
+        "market segments with clear salary differentiation."
     )
     st.write("---")
 
@@ -43,20 +44,62 @@ def page_cluster_body():
         "The pipeline uses the following steps:\n"
         "1. **OrdinalMappingEncoder** encodes experience_level, "
         "education_required, company_size\n"
-        "2. **OneHotEncoder** encodes employment_type\n"
-        "3. **FrequencyEncoder** encodes job_title, company_location, "
-        "employee_residence, industry\n"
-        "4. **StandardScaler** scales all features\n"
-        "5. **PCA:** keeps 95% of variance (auto-selects components)\n"
-        "6. **KMeans:**  3 clusters"
+        "2. **CountFrequencyEncoder** (count) encodes job_title, "
+        "company_location, employee_residence, industry\n"
+        "3. **StandardScaler** scales all features\n"
+        "4. **PCA:** keeps 99% of variance (auto-selects components)\n"
+        "5. **KMeans:** 4 clusters (init='random', n_init=10, "
+        "max_iter=300)"
     )
 
     st.write("## The features the model was trained with")
-    st.write(cluster_features)
+    st.write(", ".join(cluster_features))
 
     st.write("---")
 
-    st.write("## Model Performance & Cluster Interpretation")
+    st.write("## Model Performance")
+
+    st.write("### Classifier Performance")
+    st.write(
+        "A GradientBoostingClassifier was trained to predict "
+        "cluster labels from the original features, validating "
+        "that clusters are **explainable** by the input variables."
+    )
+
+    clf_metrics = pd.DataFrame({
+        "Cluster": ["0 — India Market", "1 — Junior Pipeline",
+                     "2 — Senior Premium", "3 — Emerging Markets",
+                     "Overall Accuracy"],
+        "Train Precision": ["1.00", "1.00", "1.00", "1.00", ""],
+        "Train Recall": ["1.00", "1.00", "1.00", "1.00", ""],
+        "Train F1": ["1.00", "1.00", "1.00", "1.00", "**1.00**"],
+        "Test Precision": ["1.00", "1.00", "1.00", "1.00", ""],
+        "Test Recall": ["1.00", "1.00", "1.00", "1.00", ""],
+        "Test F1": ["1.00", "1.00", "1.00", "1.00", "**1.00**"],
+    })
+    clf_metrics.index = [" "] * len(clf_metrics)
+    st.table(clf_metrics)
+
+    st.success(
+        "The classifier achieves **100% accuracy** on both "
+        "train (11,760 samples) and test (2,941 samples) sets. "
+        "This confirms the clusters are fully determined by the "
+        "input features — the PCA + KMeans groupings are stable "
+        "and reproducible."
+    )
+
+    st.write("### Cluster Size Distribution")
+    cluster_sizes = pd.DataFrame({
+        "Cluster": [0, 1, 2, 3],
+        "Label": ["India Market", "Junior Pipeline",
+                  "Senior Premium", "Emerging Markets"],
+        "Train Samples": [455, 2086, 4597, 4622],
+        "Test Samples": [128, 512, 1128, 1173],
+        "Share (%)": ["4%", "18%", "39%", "39%"],
+    })
+    cluster_sizes.index = [" "] * len(cluster_sizes)
+    st.table(cluster_sizes)
+
     st.write("### Clusters Silhouette Plot")
     st.image(cluster_silhouette)
     st.info(
@@ -64,12 +107,12 @@ def page_cluster_body():
         "data point is to its own cluster compared to "
         "neighbouring clusters. Values range from -1 "
         "(wrong cluster) to +1 (well-matched). The "
-        "average silhouette score of **0.12** indicates "
-        "weak cluster structure. The clusters "
-        "capture some differences in the data, but "
-        "there is significant overlap between segments. "
-        "This is expected given the continuous nature "
-        "of salary and location data."
+        "average silhouette score of **0.16** indicates "
+        "modest cluster structure. While the score is modest, "
+        "the 4-cluster solution produces highly interpretable "
+        "market segments with clear salary differentiation. "
+        "Interpretability was prioritised alongside the "
+        "quantitative metric."
     )
 
     cluster_distribution_per_variable(
@@ -80,36 +123,47 @@ def page_cluster_body():
     st.info(
         "This chart shows which features have the "
         "greatest influence on cluster assignment. "
-        "**experience_level** and **years_experience** "
-        "are the dominant drivers, followed by **company_location** "
-        "confirming that the clusters primarily "
-        "segment professionals by seniority and geographic market. "
+        "**employee_residence** is the strongest cluster-defining "
+        "feature (importance = 0.46), followed by "
+        "**experience_level** (0.24), **years_experience** (0.22), "
+        "and **company_location** (0.07) confirming that geography "
+        "and experience are the dominant axes of AI salary segmentation."
     )
 
     st.write("## Cluster Profile")
     statement = (
-        "* **Cluster 0 (The India Segment ~4%):** India-centric roles. "
-        "Salary band is 93% Low. Geography remains the strongest "
-        "penalty, when employee and company are both in India, salaries "
-        "are almost always low regardless of experience level.\n"
-        "* **Cluster 1 (Senior Professionals ~48%):** 7-15 years "
-        "experience, SE/EX level. Distributed across developed markets. "
-        "Salary is 66% High, 30% Mid. Experience drives these "
-        "professionals into premium pay.\n"
-        "* **Cluster 2 (Junior/Entry ~48%):** 1-3 years experience, "
-        "MI/EN level. Also in developed markets. Salary is 57% Low, "
-        "40% Mid. Early-career professionals earning less, as expected.\n"
+        "* **Cluster 0 : India Market (~4%):** India-centric roles "
+        "(employee residence: India 74%, company location: India 100%). "
+        "Mixed experience levels (MI 31%, EX 30%, SE 29%). "
+        "Salary is 93% Low, 7% Mid. Despite having senior professionals, "
+        "geography is the dominant salary factor for this group.\n"
+        "* **Cluster 1 : Junior/Entry Developed Markets (~18%):** "
+        "1–3 years experience, MI 51% / EN 49%. Located in developed "
+        "markets (Ireland, Switzerland, France, Canada). "
+        "Salary is 57% Low, 41% Mid, 2% High. Early-career "
+        "professionals earning less, as expected.\n"
+        "* **Cluster 2 : Senior Professionals (~39%):** "
+        "7–15 years experience, SE 50% / EX 50%. Located across "
+        "developed markets (China, Singapore, Germany). "
+        "Salary is 66% High, 30% Mid, 4% Low. Experience drives "
+        "these professionals into premium pay.\n"
+        "* **Cluster 3 : Mid-career Emerging Markets (~39%):** "
+        "2–9 years experience, mixed levels (MI 26%, SE 25%, EN 25%). "
+        "Located in emerging markets (Romania, Vietnam, Indonesia). "
+        "Salary is nearly uniform: Mid 35%, High 34%, Low 31%. "
+        "Experience still plays a role within this geographic group.\n"
         "* **One potential action:** when evaluating a job offer, compare "
         "the offered salary against the typical band for your cluster. "
-        "If the offer falls in the Low band for a Cluster 1 profile, "
+        "If the offer falls in the Low band for a Cluster 2 profile, "
         "there may be room for negotiation."
     )
     st.info(statement)
 
     st.success(
-        "**Key insight:** PCA revealed that experience "
-        "(PC1 = 48% of variance) is the dominant axis, while geography "
-        "(PC2-PC3) creates the secondary separation."
+        "**Key insight:** PCA Component 0 captures geographic variation "
+        "(vertical columns correspond to different employee residence "
+        "groups), while PCA Component 1 captures experience and seniority "
+        "(senior profiles at the top, junior profiles at the bottom)."
     )
 
     # hide index in st.table()
@@ -119,10 +173,13 @@ def page_cluster_body():
     st.write("---")
     st.write("## Limitations & Next Steps")
     st.warning(
-        "The silhouette score of **0.12** indicates weak cluster separation. "
+        "The silhouette score of **0.16** indicates modest cluster separation. "
         "The AI salary dataset is **continuously distributed**, salary is "
         "driven by a smooth gradient of experience, location, and company "
         "size rather than discrete segments.\n\n"
+        "Hyperparameter tuning (192 combinations) improved the score from "
+        "0.145 to 0.159 and surfaced a 4th cluster (India market) that was "
+        "hidden at k=3.\n\n"
         "**Alternative approaches** (residual clustering, UMAP + HDBSCAN, "
         "K-Prototypes) were explored. The most actionable result was "
         "**residual clustering**, which classifies roles as Overpaid, Fair, "

@@ -164,19 +164,27 @@ def _render_salary_insights(salary, experience_level, company_size, cluster):
 
     # Market segment from cluster analysis
     cluster_descriptions = {
-        0: ("The India Segment (~4%)",
-            "India-centric roles. Salary band is 93% Low. "
-            "Geography remains the strongest penalty — when employee "
-            "and company are both in India, salaries are almost always "
-            "low regardless of experience level."),
-        1: ("Senior Professionals (~48%)",
-            "7-15 years experience, SE/EX level. Distributed across "
-            "developed markets. Salary is 66% High, 30% Mid. "
-            "Experience drives these professionals into premium pay."),
-        2: ("Junior/Entry (~48%)",
-            "1-3 years experience, MI/EN level. Also in developed "
-            "markets. Salary is 57% low, 40% Mid. Early-career "
+        0: ("India Market (~4%)",
+            "India-centric roles (employee residence: India 74%, "
+            "company location: India 100%). Mixed experience levels. "
+            "Salary is 93% Low, 7% Mid. Despite having senior "
+            "professionals, geography is the dominant salary factor "
+            "for this group."),
+        1: ("Junior/Entry Developed Markets (~18%)",
+            "1–3 years experience, MI/EN level. Located in developed "
+            "markets (Ireland, Switzerland, France, Canada). "
+            "Salary is 57% Low, 41% Mid, 2% High. Early-career "
             "professionals earning less, as expected."),
+        2: ("Senior Professionals (~39%)",
+            "7–15 years experience, SE/EX level. Located across "
+            "developed markets (China, Singapore, Germany). "
+            "Salary is 66% High, 30% Mid, 4% Low. Experience drives "
+            "these professionals into premium pay."),
+        3: ("Mid-career Emerging Markets (~39%)",
+            "2–9 years experience, mixed levels. Located in emerging "
+            "markets (Romania, Vietnam, Indonesia). Salary is nearly "
+            "uniform: Mid 35%, High 34%, Low 31%. Experience still "
+            "plays a role within this geographic group."),
     }
     segment_name, segment_desc = cluster_descriptions.get(
         cluster, ("Unknown Segment", ""))
@@ -219,7 +227,7 @@ def _render_salary_insights(salary, experience_level, company_size, cluster):
 
     st.warning(
         "**Note:** This prediction has a margin of error of "
-        "approximately **±$16,000** (based on the model's test "
+        "approximately **±$16,124** (based on the model's test "
         "MAE). Actual salaries may vary depending on factors "
         "not captured by the model, such as specific skills, "
         "negotiation, benefits, and equity."

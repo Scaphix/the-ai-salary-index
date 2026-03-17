@@ -33,17 +33,16 @@ def predict_cluster(pipeline_cluster, experience_level, company_location,
                     company_size, employee_residence):
     """Predict market segment using the cluster pipeline.
 
-    The pipeline expects 11 features. We fill missing ones with
+    The pipeline expects 10 features. We fill missing ones with
     sensible defaults (mode values from training data) since the
-    cluster is primarily driven by experience_level, company_location,
-    and employee_residence — all provided by the user.
+    cluster is primarily driven by employee_residence, experience_level,
+    and years_experience — all provided or derived from user input.
     """
     years_map = {"EN": 1, "MI": 3, "SE": 8, "EX": 14}
 
     live_row = pd.DataFrame({
         "job_title": ["Data Scientist"],
         "experience_level": [experience_level],
-        "employment_type": ["FT"],
         "company_location": [company_location],
         "company_size": [company_size],
         "employee_residence": [employee_residence],
