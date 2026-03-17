@@ -1,12 +1,16 @@
-# [The AI Salary Index](https://tasi-the-ai-salary-index-361138766018.herokuapp.com/page_cluster_body)
+# [TASI(The AI Salary Index)](https://tasi-the-ai-salary-index-361138766018.herokuapp.com/page_cluster_body)
 
 ## Overview
 
-Pricing AI/ML talent is hard — experience, location, and company size all pull salary in different directions. **The AI Salary Index** uses 15,000+ global job listings to give recruiters three things:
+**TASI** (The AI Salary Index) is a tool aimed to help recruiters in their search for candidates. 
 
-1. **Salary Prediction** — A Gradient Boosting model (R² = 0.86) predicts salary from a candidate's profile.
-2. **Market Segmentation** — PCA + K-Means clustering groups roles into three segments split by experience and geography, revealing where pay premiums and penalties lie.
-3. **Data-driven insights** — Correlation analysis and hypothesis testing identify which attributes actually drive compensation.
+Setting the right salary for AI/ML talent is challenging: experience, location, company size, and remote preferences all pull salary in different directions, making it difficult to benchmark compensation with confidence.
+
+**TASI** solves this. Built on 15,000+ global AI job listings, it gives recruiters three things:
+
+1. **Salary Prediction:**  A Gradient Boosting model (R² = 0.86) predicts salary from a candidate's profile.
+2. **Market Segmentation:**  PCA + K-Means clustering groups roles into three segments split by experience and geography, revealing where pay premiums and penalties lie.
+3. **Data-driven insights:**  Correlation analysis and hypothesis testing identify which attributes actually drive compensation.
 
 
 ## Dataset Content
@@ -46,14 +50,17 @@ From a business perspective, this project helps recruiting firms optimise compen
 
 ---
 
-**Business Requirement 1 — Data Visualisation & Correlation Study**
+**Business Requirement 1 : Data Visualisation & Correlation Study**
 - Identify which attributes correlate most closely with AI/ML salary levels.
+- *See `02-JobMarketStudy.ipynb` for exploratory analysis, correlation study, and hypothesis validation. Dashboard page: AI Salary Study.*
 
-**Business Requirement 2 — Salary Prediction**
+**Business Requirement 2 : Salary Prediction**
 - Predict salary for a given candidate profile using a regression model.
+- *See `05-ModelingEvaluation-PredictSalary.ipynb` for regression model training, hyperparameter optimisation, and evaluation. Dashboard page: Predict Salary & ML Regression Performance.*
 
-**Business Requirement 3 — Market Segmentation**
+**Business Requirement 3 : Market Segmentation**
 - Group AI roles into market-based clusters to reveal distinct salary segments and labour market patterns.
+- *See `06-ModelingEvaluation-Cluster.ipynb` for PCA + K-Means pipeline and cluster profiling. Dashboard page: ML Cluster Performance.*
 
 ## Hypotheses and how to validate them?
 
@@ -62,39 +69,54 @@ To better understand the factors influencing salary levels in the AI/ML job mark
 | Hypothesis | Rationale | Validation |
 |------------|------------|-------------|
 | **H1:** `experience_level` is the Dominant Salary Driver | Candidates with more experience (Entry → Executive) should command higher compensation | Visualize salary distribution by experience level, conduct ANOVA or regression analysis to confirm positive correlation |
-| **H2:** Remote roles (`remote_ratio` = 100) have different salary expectations than hybrid/on-site roles | Geographic flexibility may impact salary—either premium for remote or discount based on cost-of-living | Visualize salary distribution by remote_ratio categories, conduct hypothesis test for salary difference |
+| **H2:** Remote roles (`remote_ratio` = 100) have different salary expectations than hybrid/on-site roles |Remote roles may pay differently than on-site ones, some companies offer a premium for flexibility, while others adjust salaries based on the employee's local cost of living. | Spearman correlation between `remote_ratio` and `salary_usd`, plus a Kruskal-Wallis test across the three remote-ratio groups (on-site, hybrid, remote). |
 | **H3:** `years_experience` required is positively correlated with `salary_usd` | Roles demanding more years of experience should offer higher compensation to attract experienced talent | Scatter plot with regression line, calculate correlation coefficient to confirm strength of relationship |
 | **H4:** Company size (`company_size`) is a significant salary driver | Large companies pay significantly higher salaries than small and medium-sized companies, reflecting greater revenue, bigger budgets, and competitive hiring pressure | Kruskal-Wallis H-test across the three company size groups (S, M, L), compare mean and median salary per group, boxplot comparison |
 
-These hypotheses will be tested through exploratory data analysis and statistical testing to identify whether the respective features are influential predictors of salary in the AI/ML market.
+These hypotheses are validated in `02-JobMarketStudy.ipynb` through exploratory data analysis and statistical testing (Spearman correlation, Kruskal-Wallis H-test). Results are summarised on the **Project Hypothesis** dashboard page.
 
 
 ### **Visual Flow**
 ```
-Salary Study (Explore AI/ML compensation data)
+### Visual Flow (CRISP-DM)
+
+Business Understanding (Define recruiting goals & business requirements)
     ↓
-Hypotheses (What drives salary?)
+Data Understanding (BR1: Salary correlation study & validate hypotheses )
     ↓
-Exploratory Data Analysis (Validate with visualisations & statistics)
+Data Preparation (Clean, encode, feature engineer & select validated features)
     ↓
-Feature Selection (Include only validated features)
+Modeling (BR2: Salary Prediction — BR3: Market Segmentation)
     ↓
-BR1: Correlation Study → BR2: Salary Prediction → BR3: Market Segmentation
+Evaluation (Assess model performance)
+    ↓
+Deployment (Streamlit dashboard on Heroku)
+
 ```
 
 ## Mapping Business Requirements to Data Visualisations and ML Tasks
 
-**BR1 — Data Visualisation & Correlation Study**
+**BR1 : Data Visualisation & Correlation Study**
 - Salary distribution plots by experience level, location, and remote ratio
 - Pearson/Spearman correlation analysis and hypothesis testing (H1–H4)
 - Output: Identify which attributes drive AI/ML compensation
 
-**BR2 — Salary Prediction (Regression)**
+**BR2 : Salary Prediction (Regression)**
 - GradientBoostingRegressor trained on candidate profile features (experience, location, company size)
 - Feature importance assessment and model evaluation (R², MAE, RMSE)
 - Output: Predicted salary with confidence range
 
-**BR3 — Market Segmentation (Clustering)**
+Example predictions from the dashboard:
+
+| Experience | Company Size | Location | Residence | Predicted Salary | Cluster |
+|------------|-------------|----------|-----------|-----------------|---------|
+| Senior (SE) | Small (S) | United States | United States | ~$138,000 USD | 1 — Senior Professionals |
+| Mid-level (MI) | Medium (M) | Germany | Germany | ~$95,000 USD | 2 — Junior/Entry |
+| Entry-level (EN) | Large (L) | India | India | ~$52,000 USD | 0 — India Segment |
+
+*Predictions carry a margin of error of approximately ±$16,000 (model test MAE).*
+
+**BR3 : Market Segmentation (Clustering)**
 - PCA for dimensionality reduction + K-Means (k=3) to segment roles
 - Cluster profiling by experience level, geography, and salary band
 - Output: Three market segments with distinct compensation patterns
@@ -135,31 +157,31 @@ BR1: Correlation Study → BR2: Salary Prediction → BR3: Market Segmentation
 
 ## Epics & User Stories
 
-### Epic 1 — Data Insights (BR1)
+### Epic 1 : Data Insights (BR1)
 
-- **US 1.1** — As a recruiter, I can view a project summary page to understand the dataset, terminology, and business requirements.
+- **US 1.1** : As a recruiter, I can view a project summary page to understand the dataset, terminology, and business requirements.
   - **Viz Task**: Data profiling in a Streamlit information page.
 
-- **US 1.2** — As a recruiter, I can view an interactive salary study to understand how salary varies by experience level, company size, and location.
+- **US 1.2** : As a recruiter, I can view an interactive salary study to understand how salary varies by experience level, company size, and location.
   - **Viz Task**: Box plots, histograms with KDE, parallel categories plot (Plotly).
 
-- **US 1.3** — As a recruiter, I can review validated hypotheses to trust which factors genuinely influence AI salaries.
+- **US 1.3** : As a recruiter, I can review validated hypotheses to trust which factors genuinely influence AI salaries.
   - **Statistical Task**: Kruskal-Wallis H-test, Spearman and Pearson correlation with supporting visualisations.
 
-### Epic 2 — Salary Prediction (BR2)
+### Epic 2 : Salary Prediction (BR2)
 
-- **US 2.1** — As a recruiter, I can input a candidate's profile (experience level, company location, employee residence, company size) and get an instant predicted salary in USD.
+- **US 2.1** : As a recruiter, I can input a candidate's profile (experience level, company location, employee residence, company size) and get an instant predicted salary in USD.
   - **ML Task**: GradientBoostingRegressor pipeline served through a Streamlit form.
 
-- **US 2.2** — As a data practitioner, I can view model performance metrics (R², MAE, RMSE) and feature importance to evaluate the model's accuracy and identify which variables drive predictions.
+- **US 2.2** : As a data practitioner, I can view model performance metrics (R², MAE, RMSE) and feature importance to evaluate the model's accuracy and identify which variables drive predictions.
   - **Viz Task**: Train vs test evaluation metrics and feature importance bar chart.
 
-### Epic 3 — Market Segmentation (BR3)
+### Epic 3 : Market Segmentation (BR3)
 
-- **US 3.1** — As a recruiter, I can see which market segment a role belongs to so that I can understand its compensation context.
+- **US 3.1** : As a recruiter, I can see which market segment a role belongs to so that I can understand its compensation context.
   - **ML Task**: PCA + K-Means clustering (k=3) assigning roles to experience/geography-based segments.
 
-- **US 3.2** — As a data practitioner, I can understand how clusters are derived and their limitations.
+- **US 3.2** : As a data practitioner, I can understand how clusters are derived and their limitations.
   - **Viz Task**: Silhouette plot, cluster profiles, and distribution charts with methodology explanation.
 
 ### User Stories to Notebook & Dashboard Page Mapping
@@ -181,56 +203,38 @@ The dashboard is developed in Streamlit and designed to guide the user from busi
 It consists of five main pages, each mapped to specific business requirements.
 
 ### Page 1: Quick Project Summary
-**Purpose**: Provide a clear overview of the project and orient users.
 
-**Sections**:
-- General information about the AI job market and why data-driven salary decisions matter
-- Project terms and jargon (experience levels, remote ratio, company size definitions)
-- Dataset overview (15,000+ AI job listings from 50+ countries)
-- Business requirements (BR1: Salary Prediction, BR2: Market Segmentation)
+- Provide a clear overview of the project and orient users.
+- Describe business requirements.
 
 ### Page 2: AI Salary Study
-**Purpose**: Address **Business Requirement 1** (Data Insights). This page helps recruiters understand what drives AI salaries. It focuses on identifying key job attributes most correlated with salary and provides visual and statistical insights.
-
-**Sections**:
-- Dataset inspection: checkbox to display shape, column types, and first rows of the dataset
-- KPI metrics: total jobs analysed, median salary, top-paying country, most common experience level
-- Salary distribution analysis: histogram showing the right-skewed salary distribution with median vs mean comparison
-- Salary by location: bar charts of top 12 countries by median salary for both company location and employee residence
-- Correlation study: Pearson and Spearman heatmaps with analysis of experience level, years of experience, company size, and remote ratio
-- Parallel categories plot: interactive Plotly visualisation showing salary flow across experience level, remote ratio, and company size
+ 
+- Address **Business Requirement 1** (Data Visualisation & Correlation Study).
+- Explore salary distributions by experience level, location, and company size.
+- Present Pearson and Spearman correlation analysis.
 
 ### Page 3: Project Hypothesis and Validation
-**Purpose**: Present the four project hypotheses and their validation outcomes. 
-
-**Sections**:
-- **H1** — Experience level is the dominant salary driver: verdict (Confirmed), boxplot, statistical evidence
-- **H2** — Remote roles have different salary expectations: verdict (Rejected), boxplot, statistical evidence
-- **H3** — Years of experience positively correlates with salary: verdict (Confirmed), scatter plot with Pearson r
-- **H4** — Company size is a significant salary driver: verdict (Confirmed), boxplot, statistical evidence
-- Each hypothesis includes a plain-English conclusion and checkbox to reveal the supporting visualisation
+ 
+- Present the four project hypotheses and their validation outcomes.
+- Provide statistical evidence and supporting visualisations for each hypothesis.
 
 ### Page 4: Predict Salary
-**Purpose**: Address **Business Requirement 2** (Salary Prediction). Allows users to input a candidate profile and receive a predicted annual salary with contextual insights.
 
-**Sections**:
-- Pipeline explanation: two-stage pipeline overview (data cleaning/feature engineering + regression model)
-- Model performance metrics: R² and MAE for both train and test sets, with success/failure statement
-- Feature importance: bar chart showing the top predictive features (experience_level > 50%)
-- Live prediction interface: dropdown widgets for experience level, company size, company location, employee residence
-- Prediction output: predicted salary with salary tier context and actionable takeaways
+- Address **Business Requirement 2 & 3** (Salary Prediction & segmentation).
+- Allow users to input a candidate profile and receive a predicted salary.
 
-### Page 5: Cluster Analysis
-**Purpose**: Address **Business Requirement 3** (Market Segmentation). Shows cluster analysis performance and interpretation, segmenting AI professionals by geographic market.
+### Page 5: ML Regression Performance
 
-**Sections**:
-- ML pipeline overview: encoding, feature selection, scaling, PCA, KMeans steps
-- Model performance: silhouette score (0.53) with honest assessment of cluster separation
-- Silhouette plot: visualisation of cluster cohesion
-- Cluster distribution: interactive bar and line charts showing cluster breakdown across salary levels
-- Features defining clusters: bar chart of most important features for cluster assignment
-- Cluster profiles: table with per-cluster statistics and plain-English interpretation of each segment (Emerging-market, European-market, Established-market professionals)
-- Limitations & next steps: honest note on weak cluster separation and alternative approaches considered
+- Address **Business Requirement 2** (Salary Prediction ML pipeline).
+- Show ML pipeline steps.
+- Display model performance metrics and feature importance.
+
+### Page 6: ML Cluster Performance
+
+- Address **Business Requirement 3** (Market Segmentation ML pipeline).
+- Show Cluster ML pipeline steps.
+- Show cluster model performance and interpretation.
+- Profile three market segments by geography and experience level.
 
 ## Technologies Used
 
