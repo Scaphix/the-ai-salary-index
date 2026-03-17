@@ -53,40 +53,11 @@ def page_cluster_body():
     )
 
     st.write("## The features the model was trained with")
-    st.write(", ".join(cluster_features))
+    st.write(cluster_features)
 
     st.write("---")
 
     st.write("## Model Performance")
-
-    st.write("### Classifier Performance")
-    st.write(
-        "A GradientBoostingClassifier was trained to predict "
-        "cluster labels from the original features, validating "
-        "that clusters are **explainable** by the input variables."
-    )
-
-    clf_metrics = pd.DataFrame({
-        "Cluster": ["0 — India Market", "1 — Junior Pipeline",
-                     "2 — Senior Premium", "3 — Emerging Markets",
-                     "Overall Accuracy"],
-        "Train Precision": ["1.00", "1.00", "1.00", "1.00", ""],
-        "Train Recall": ["1.00", "1.00", "1.00", "1.00", ""],
-        "Train F1": ["1.00", "1.00", "1.00", "1.00", "**1.00**"],
-        "Test Precision": ["1.00", "1.00", "1.00", "1.00", ""],
-        "Test Recall": ["1.00", "1.00", "1.00", "1.00", ""],
-        "Test F1": ["1.00", "1.00", "1.00", "1.00", "**1.00**"],
-    })
-    clf_metrics.index = [" "] * len(clf_metrics)
-    st.table(clf_metrics)
-
-    st.success(
-        "The classifier achieves **100% accuracy** on both "
-        "train (11,760 samples) and test (2,941 samples) sets. "
-        "This confirms the clusters are fully determined by the "
-        "input features — the PCA + KMeans groupings are stable "
-        "and reproducible."
-    )
 
     st.write("### Cluster Size Distribution")
     cluster_sizes = pd.DataFrame({
@@ -173,7 +144,7 @@ def page_cluster_body():
     st.write("---")
     st.write("## Limitations & Next Steps")
     st.warning(
-        "The silhouette score of **0.16** indicates modest cluster separation. "
+        "The silhouette score of **0.16** indicates modest cluster separation."
         "The AI salary dataset is **continuously distributed**, salary is "
         "driven by a smooth gradient of experience, location, and company "
         "size rather than discrete segments.\n\n"

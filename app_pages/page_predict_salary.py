@@ -199,26 +199,28 @@ def _render_salary_insights(salary, experience_level, company_size, cluster):
     if experience_level in ("EN", "MI"):
         tips.append(
             "Moving from entry/mid-level to senior typically "
-            "results in a significant salary jump, experience "
-            "level is the strongest predictor in the model."
+            "results in a significant salary jump. Experience "
+            "level is the second strongest predictor in the model "
+            "(importance = 0.24)."
         )
     if company_size == "S":
         tips.append(
-            "Larger companies tend to offer higher compensation."
-            " Consider targeting medium or large organisations "
+            "Larger companies tend to offer higher compensation. "
+            "Consider targeting medium or large organisations "
             "for better pay."
         )
     if experience_level == "EX":
         tips.append(
             "Executive-level roles command premium salaries. "
-            "Location choice becomes the key differentiator "
-            "at this level."
+            "At this level, geography becomes the key "
+            "differentiator between high and top-tier pay."
         )
 
     tips.append(
-        "Company and employee location strongly influence "
-        "salary. Roles based in Switzerland, the US, or "
-        "Norway tend to pay the most."
+        "Employee residence is the strongest cluster-defining "
+        "feature (importance = 0.46). Roles based in Switzerland, "
+        "Denmark, or Norway tend to pay the most, while India-based "
+        "roles fall almost entirely in the Low salary band."
     )
 
     st.write("**Key Takeaways**")
