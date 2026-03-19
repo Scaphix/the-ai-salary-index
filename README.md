@@ -154,6 +154,8 @@ Example predictions from the dashboard:
 | **Features** | All profile features except `salary_usd`, `required_skills`, `company_name` |
 | **Data** | Same dataset, train + test combined (14,701 rows) |
 
+**Clustering Journey:** Unlike the regression pipeline, the clustering solution required extensive iteration — the dataset has no strong natural cluster structure, so the right pipeline, encoding strategy, and number of clusters had to be discovered through experimentation. All steps taken, from the initial setup through pipeline redesigns, debugging, hyperparameter tuning, and the final 4-cluster solution, are documented in detail in [clustering_journey.md](clustering_journey.md).
+
 
 ## Epics & User Stories
 
@@ -353,6 +355,7 @@ No automated unit tests have been carried out at this time.
 
 ## Unfixed Bugs
 * At the time of writing, there are no unfixed bugs within the project.
+* All bugs encountered during development and their fixes are documented in [DEBUGGING.md](DEBUGGING.md).
 
 
 ## Deployment
