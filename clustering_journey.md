@@ -72,4 +72,4 @@ Made three key changes based on the Phase 3 findings:
 
 `OrdinalMapping` → `FrequencyEncoding` → `StandardScaler` → `PCA(0.99)` → `KMeans(k=4)`
 
-[BACK TO README.md](Readme.md).
+[BACK TO README.md](README.md).
