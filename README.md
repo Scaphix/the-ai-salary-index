@@ -76,9 +76,7 @@ To better understand the factors influencing salary levels in the AI/ML job mark
 These hypotheses are validated in `02-JobMarketStudy.ipynb` through exploratory data analysis and statistical testing (Spearman correlation, Kruskal-Wallis H-test). Results are summarised on the **Project Hypothesis** dashboard page.
 
 
-### **Visual Flow**
-
-### Visual Flow (CRISP-DM)
+### **Visual Flow** (CRISP-DM)
 
 ```
 
@@ -151,7 +149,7 @@ Example predictions from the dashboard:
 | **Ideal Outcome** | Distinct segments that reveal experience and geography-based compensation patterns |
 | **Success Metrics** | Silhouette score ≥ 0.15; 3–6 interpretable clusters; min 500 samples per cluster |
 | **Output** | Cluster ID per role, cluster profiles (experience, geography, salary band distribution) |
-| **Features** | All profile features except `salary_usd`, `required_skills`, `company_name` |
+| **Features** | All profile features except `salary_usd`, `required_skills`, `company_name`, `employment_type` |
 | **Data** | Same dataset, train + test combined (14,701 rows) |
 
 **Clustering Journey:** Unlike the regression pipeline, the clustering solution required extensive iteration — the dataset has no strong natural cluster structure, so the right pipeline, encoding strategy, and number of clusters had to be discovered through experimentation. All steps taken, from the initial setup through pipeline redesigns, debugging, hyperparameter tuning, and the final 4-cluster solution, are documented in detail in [clustering_journey.md](clustering_journey.md).

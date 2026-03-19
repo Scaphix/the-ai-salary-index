@@ -6,24 +6,24 @@ This document records the iterative development of the clustering model used in 
 
 ---
 
-## Phase 1 : Initial Setup (Mar 3)
+## Phase 1 : Initial Setup
 
 - Created the notebook following the course material structure.
 - Built a full KMeans clustering pipeline using: `OrdinalEncoder` → `OneHotEncoder` → `CountFrequencyEncoder` → `SmartCorrelatedSelection` → `StandardScaler` → `PCA(n_components=6)` → `KMeans(k=3)`.
 - Included PCA analysis, elbow/silhouette evaluation, a GradientBoosting classifier to identify the most important cluster-defining features, cluster profiling, and SalaryBand distribution analysis.
 
-## Phase 2 : Expanding Cluster Selection Methods & Bug Fix (Mar 5)
+## Phase 2 : Expanding Cluster Selection Methods & Bug Fix 
 
 - Added 5 different cluster selection methods (elbow, silhouette, gap statistic, etc.) to rigorously evaluate optimal k.
 - **Encountered BUG #1:** `IndexError: index 0 is out of bounds for axis 0 with size 0` in the `Clusters_IndividualDescription` function. The root cause was assigning a scalar string to a column of an empty DataFrame. The numeric branch didn't create a row, so when the object branch tried `.values[0]`, it failed. Fixed by wrapping all column assignments in a list `[value]`.
 - Documented the bug and fix in `DEBUGGING.md`.
 
-## Phase 3 : Initial Conclusion: No Natural Clusters (Mar 5)
+## Phase 3 : Initial Conclusion: No Natural Clusters
 
 - After evaluating all 5 methods (GMM, DBSCAN, UMAP, Gower distance, and different encoding strategies), concluded that **no strong natural cluster structure existed** in the data. The PCA scatter plot showed one large overlapping blob with centroids too close together.
 - Saved initial pipeline artifacts (TrainSet.csv, clusters_profile.csv, silhouette plot, feature importance chart).
 
-## Phase 4 : Pipeline Redesign (Mar 13)
+## Phase 4 : Pipeline Redesign
 
 Made three key changes based on the Phase 3 findings:
 
@@ -32,7 +32,7 @@ Made three key changes based on the Phase 3 findings:
 3. **Switched PCA to `n_components=0.99`** (variance-based) instead of a fixed number of components — auto-selects components explaining 99% of variance.
 4. **Reduced to 3 clusters** initially as part of the simplification.
 
-## Phase 5 : Hyperparameter Tuning & k=4 (Mar 14)
+## Phase 5 : Hyperparameter Tuning & k=4
 
 - Tuned 6 hyperparameters: `n_components`, `n_clusters`, `init`, `n_init`, `max_iter`, `encoding_method`.
 - **k=4 emerged as optimal** (silhouette score 0.1585, +0.0132 over default), surfacing a distinct India labor market segment that was hidden at k=3.
@@ -40,13 +40,13 @@ Made three key changes based on the Phase 3 findings:
 - Saved the final pipeline (`pipeline_cluster.pkl`) and updated artifacts.
 - While the silhouette score remained modest (0.16), the 4-cluster solution produced highly interpretable market segments with clear salary differentiation.
 
-## Phase 6 : Dashboard Integration (Mar 11–15)
+## Phase 6 : Dashboard Integration
 
 - Created `app_pages/page_cluster.py` to display cluster results in the Streamlit dashboard.
 - Refined the page layout, added `st.caption` to help users read the plots.
 - Fixed PEP 8 validation errors across the codebase.
 
-## Phase 7 : Analysis & Interpretation (Mar 16–17)
+## Phase 7 : Analysis & Interpretation
 
 - Wrote cluster profile descriptions and the final study summary.
 - Added the `cluster_distribution_per_variable()` function to visualize absolute and relative salary distributions across clusters.
@@ -72,4 +72,4 @@ Made three key changes based on the Phase 3 findings:
 
 `OrdinalMapping` → `FrequencyEncoding` → `StandardScaler` → `PCA(0.99)` → `KMeans(k=4)`
 
-[**BACK TO README.md**](Readme.md).
+[BACK TO README.md](Readme.md).
